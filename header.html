@@ -1,1 +1,625 @@
 
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production-Ready Header & Navigation Template</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(0)' },
+                        }
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 0.15s ease-out forwards',
+                        slideDown: 'slideDown 0.3s ease-out forwards',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for megamenu and mobile drawer */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen selection:bg-brand-500 selection:text-white flex flex-col">
+
+    <!-- ========================================================================= -->
+    <!-- 1. TOP ANNOUNCEMENT BAR -->
+    <!-- ========================================================================= -->
+    <aside id="announcementBar" class="bg-gradient-to-r from-brand-700 via-indigo-600 to-purple-600 text-white text-xs sm:text-sm py-2.5 px-4 relative z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap mx-auto sm:mx-0">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-md shrink-0">
+                    <i class="fa-solid fa-sparkles text-[10px]"></i> Launch v3.0
+                </span>
+                <span class="truncate font-medium">Introducing AI-powered design tokens and live collaboration.</span>
+                <a href="#whats-new" class="underline font-bold hover:text-brand-200 transition-colors shrink-0 hidden sm:inline-block">Read release notes &rarr;</a>
+            </div>
+            
+            <button id="dismissAnnouncementBtn" aria-label="Dismiss announcement" class="p-1 hover:bg-white/20 rounded-lg transition-colors text-white/80 hover:text-white shrink-0">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ========================================================================= -->
+    <!-- 2. MAIN HEADER & NAVIGATION -->
+    <!-- ========================================================================= -->
+    <header id="mainHeader" class="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20 gap-4">
+                
+                <!-- Brand Logo & Left Nav Link Group -->
+                <div class="flex items-center gap-8">
+                    <!-- Brand Logo -->
+                    <a href="#" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-brand-500 rounded-xl p-1">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition-transform duration-200">
+                            <i class="fa-solid fa-layer-group text-lg"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xl font-black bg-gradient-to-r from-slate-900 via-brand-900 to-slate-700 dark:from-white dark:via-brand-200 dark:to-slate-300 bg-clip-text text-transparent tracking-tight">
+                                NexusUI
+                            </span>
+                            <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 tracking-wider uppercase -mt-1 hidden sm:block">Enterprise Kit</span>
+                        </div>
+                    </a>
+
+                    <!-- Desktop Navigation Links -->
+                    <nav class="hidden lg:flex items-center gap-1" aria-label="Main Navigation">
+                        <a href="#home" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10 transition-all" aria-current="page">
+                            Home
+                        </a>
+
+                        <!-- Mega Menu Trigger & Dropdown Container -->
+                        <div class="relative group">
+                            <button id="megaMenuBtn" aria-expanded="false" aria-haspopup="true" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                Products
+                                <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 group-hover:rotate-180 text-slate-400 group-hover:text-brand-600"></i>
+                            </button>
+
+                            <!-- Interactive Mega Menu Container -->
+                            <div class="absolute top-full left-0 w-[780px] mt-2 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 z-50 p-6 overflow-hidden">
+                                <div class="grid grid-cols-12 gap-6">
+                                    
+                                    <!-- Column 1: Core Platform -->
+                                    <div class="col-span-7 space-y-3">
+                                        <div class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3">
+                                            Platform Solutions
+                                        </div>
+                                        <div class="space-y-1">
+                                            <a href="#analytics" class="group/item flex items-start gap-3.5 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all">
+                                                <div class="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:scale-110 transition-transform">
+                                                    <i class="fa-solid fa-chart-pie text-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-bold text-slate-900 dark:text-white group-hover/item:text-brand-600 dark:group-hover/item:text-brand-400 transition-colors">
+                                                        Advanced Analytics
+                                                    </div>
+                                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                                        Real-time user behaviors and customized funnel analytics.
+                                                    </p>
+                                                </div>
+                                            </a>
+
+                                            <a href="#security" class="group/item flex items-start gap-3.5 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all">
+                                                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover/item:scale-110 transition-transform">
+                                                    <i class="fa-solid fa-shield-check text-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-bold text-slate-900 dark:text-white group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400 transition-colors">
+                                                        Shield Security
+                                                    </div>
+                                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                                        Zero-trust authentication and SOC2 Type II security suite.
+                                                    </p>
+                                                </div>
+                                            </a>
+
+                                            <a href="#integrations" class="group/item flex items-start gap-3.5 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all">
+                                                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover/item:scale-110 transition-transform">
+                                                    <i class="fa-solid fa-diagram-project text-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-bold text-slate-900 dark:text-white group-hover/item:text-purple-600 dark:group-hover/item:text-purple-400 transition-colors">
+                                                        Automated Workflows
+                                                    </div>
+                                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                                        Integrate 200+ native apps with custom webhooks.
+                                                    </p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <!-- Column 2: Featured Section Callout -->
+                                    <div class="col-span-5 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden group/card">
+                                        <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-brand-500/20 rounded-full blur-2xl group-hover/card:bg-brand-500/30 transition-all"></div>
+                                        <div>
+                                            <span class="inline-block px-2.5 py-1 bg-brand-500/20 border border-brand-400/30 text-brand-300 rounded-lg text-[10px] font-bold uppercase tracking-wider mb-3">
+                                                Featured Module
+                                            </span>
+                                            <h4 class="text-base font-bold leading-tight">AI Copilot Assistant</h4>
+                                            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                                                Automate complex user onboarding tasks with our built-in NLP chatbot agent.
+                                            </p>
+                                        </div>
+                                        <a href="#copilot-demo" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-brand-300 hover:text-white transition-colors group/link">
+                                            Try interactive sandbox <i class="fa-solid fa-arrow-right text-[10px] group-hover/link:translate-x-1 transition-transform"></i>
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="#features" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                            Features
+                        </a>
+                        <a href="#pricing" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                            Pricing
+                        </a>
+                        <a href="#docs" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                            Documentation
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Center Section: Global Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-xs xl:max-w-sm items-center">
+                    <button id="searchTriggerBtn" class="w-full flex items-center justify-between pl-3.5 pr-2 py-2 text-xs text-slate-400 bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 rounded-xl hover:border-brand-500/50 dark:hover:border-brand-500/50 hover:bg-white dark:hover:bg-slate-900 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400 group-hover:text-brand-500 transition-colors"></i>
+                            <span class="text-slate-500 dark:text-slate-400">Search documentation...</span>
+                        </span>
+                        <kbd class="px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 rounded-lg border border-slate-300 dark:border-slate-600 shadow-sm">⌘K</kbd>
+                    </button>
+                </div>
+
+                <!-- Right Section: Action Controls -->
+                <div class="flex items-center gap-1.5 sm:gap-2.5">
+                    
+                    <!-- Search Button for Mobile Screens -->
+                    <button id="mobileSearchTriggerBtn" aria-label="Search" class="md:hidden p-2.5 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </button>
+
+                    <!-- Dark/Light Theme Switcher -->
+                    <button id="themeToggleBtn" aria-label="Switch visual theme" class="p-2.5 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all relative focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg transition-transform duration-300"></i>
+                    </button>
+
+                    <!-- Notifications Button with Badge Counter & Dropdown -->
+                    <div class="relative">
+                        <button id="notificationsBtn" aria-expanded="false" aria-label="View Notifications" class="p-2.5 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all relative focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <i class="fa-regular fa-bell text-lg"></i>
+                            <span id="unreadBadge" class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>
+                        </button>
+
+                        <!-- Notifications Dropdown Overlay -->
+                        <div id="notificationsDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 p-4 animate-fadeIn">
+                            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-3">
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Notifications</h3>
+                                <button id="markReadBtn" class="text-[11px] font-semibold text-brand-600 dark:text-brand-400 hover:underline">Mark all as read</button>
+                            </div>
+                            <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                                <a href="#" class="flex gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+                                    <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-code-commit text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-800 dark:text-slate-200 font-semibold">New deployment successful</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">2 minutes ago</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="flex gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-user-plus text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-800 dark:text-slate-200 font-semibold">Sarah joined your workspace</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">1 hour ago</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
+
+                    <!-- User Profile Avatar & Dropdown -->
+                    <div class="relative">
+                        <button id="userProfileBtn" aria-expanded="false" class="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-brand-500/50 transition-all focus:outline-none">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256" alt="User avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-brand-500">
+                                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900"></span>
+                            </div>
+                        </button>
+
+                        <!-- User Menu Dropdown -->
+                        <div id="userProfileDropdown" class="hidden absolute right-0 mt-3 w-60 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 p-2 animate-fadeIn">
+                            <div class="px-3 py-2.5 border-b border-slate-100 dark:border-slate-800">
+                                <p class="text-xs font-bold text-slate-900 dark:text-white">Alex Morgan</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">alex.morgan@nexusui.io</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="#profile" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                    <i class="fa-regular fa-user text-slate-400 w-4"></i> View Profile
+                                </a>
+                                <a href="#settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                    <i class="fa-regular fa-gear text-slate-400 w-4"></i> Settings
+                                </a>
+                                <a href="#billing" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                    <i class="fa-regular fa-credit-card text-slate-400 w-4"></i> Billing & Plans
+                                </a>
+                            </div>
+                            <div class="border-t border-slate-100 dark:border-slate-800 pt-1">
+                                <a href="#logout" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors">
+                                    <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Primary Action Button (Desktop) -->
+                    <a href="#get-started" class="hidden xl:inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl shadow-md shadow-brand-500/20 hover:shadow-lg hover:shadow-brand-500/30 active:scale-95 transition-all">
+                        Get Started
+                    </a>
+
+                    <!-- Mobile Drawer Toggle Button -->
+                    <button id="mobileDrawerBtn" aria-expanded="false" aria-label="Toggle navigation drawer" class="lg:hidden p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all focus:outline-none">
+                        <i id="mobileDrawerIcon" class="fa-solid fa-bars text-xl transition-transform duration-200"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- 3. MOBILE OFF-CANVAS / SLIDING NAVIGATION DRAWER -->
+    <!-- ========================================================================= -->
+    <!-- Backdrop Overlay -->
+    <div id="drawerBackdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
+
+    <!-- Sliding Drawer Panel -->
+    <aside id="mobileDrawer" class="fixed top-0 right-0 h-full w-full max-w-xs bg-white dark:bg-slate-900 z-50 transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl flex flex-col justify-between overflow-y-auto">
+        <!-- Drawer Header -->
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <span class="font-bold text-slate-900 dark:text-white">NexusUI</span>
+            </div>
+            <button id="closeDrawerBtn" aria-label="Close menu" class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Body Navigation -->
+        <div class="p-4 space-y-2 flex-1">
+            <a href="#home" class="block px-3.5 py-2.5 rounded-xl font-semibold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10">
+                Home
+            </a>
+
+            <!-- Accordion Dropdown -->
+            <div>
+                <button id="mobileAccordionBtn" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span>Products</span>
+                    <i id="accordionIcon" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200"></i>
+                </button>
+                <div id="mobileAccordionContent" class="hidden pl-4 py-2 space-y-1">
+                    <a href="#analytics" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-brand-500">
+                        <i class="fa-solid fa-chart-pie text-brand-500 w-4"></i> Advanced Analytics
+                    </a>
+                    <a href="#security" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-500">
+                        <i class="fa-solid fa-shield-check text-indigo-500 w-4"></i> Shield Security
+                    </a>
+                    <a href="#integrations" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-purple-500">
+                        <i class="fa-solid fa-diagram-project text-purple-500 w-4"></i> Workflows
+                    </a>
+                </div>
+            </div>
+
+            <a href="#features" class="block px-3.5 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                Features
+            </a>
+            <a href="#pricing" class="block px-3.5 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                Pricing
+            </a>
+            <a href="#docs" class="block px-3.5 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                Documentation
+            </a>
+        </div>
+
+        <!-- Drawer Footer CTA -->
+        <div class="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
+            <a href="#get-started" class="block w-full text-center py-2.5 px-4 rounded-xl font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-md">
+                Get Started
+            </a>
+            <a href="#signin" class="block w-full text-center py-2.5 px-4 rounded-xl font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800">
+                Sign In
+            </a>
+        </div>
+    </aside>
+
+    <!-- ========================================================================= -->
+    <!-- 4. INTERACTIVE GLOBAL SEARCH MODAL -->
+    <!-- ========================================================================= -->
+    <div id="searchModal" class="fixed inset-0 z-50 hidden flex items-start justify-center pt-16 sm:pt-24 px-4">
+        <!-- Backdrop -->
+        <div id="searchModalBackdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+        
+        <!-- Modal Content Container -->
+        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-10 animate-fadeIn">
+            <!-- Search Header Bar -->
+            <div class="flex items-center px-4 py-3.5 border-b border-slate-200 dark:border-slate-800">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-lg mr-3"></i>
+                <input id="modalSearchInput" type="text" placeholder="Search documentation, components, or API routes..." class="w-full bg-transparent text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none">
+                <button id="closeSearchModalBtn" class="px-2 py-1 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                    ESC
+                </button>
+            </div>
+
+            <!-- Suggested Quick Links -->
+            <div class="p-4 space-y-2 max-h-80 overflow-y-auto">
+                <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2">
+                    Quick Suggestions
+                </div>
+                <a href="#docs-quickstart" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors">
+                    <span class="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> Getting Started Quick Guide
+                    </span>
+                    <i class="fa-solid fa-arrow-right text-[10px] text-slate-400"></i>
+                </a>
+                <a href="#docs-components" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors">
+                    <span class="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <i class="fa-solid fa-cubes text-brand-500"></i> UI Components Reference
+                    </span>
+                    <i class="fa-solid fa-arrow-right text-[10px] text-slate-400"></i>
+                </a>
+                <a href="#docs-api" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors">
+                    <span class="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <i class="fa-solid fa-code text-indigo-500"></i> REST API Endpoints v2
+                    </span>
+                    <i class="fa-solid fa-arrow-right text-[10px] text-slate-400"></i>
+                </a>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                <span>Press <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded font-mono">ESC</kbd> to exit</span>
+                <span>Search powered by Nexus Engine</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 5. HERO SECTION PREVIEW (DEMO CONTENT CONTAINER) -->
+    <!-- ========================================================================= -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 flex flex-col items-center justify-center text-center relative overflow-hidden">
+        
+        <!-- Subtle Glow Background Elements -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-200/60 dark:border-brand-500/20 mb-6">
+            <span class="w-2 h-2 rounded-full bg-brand-500 animate-ping"></span> Live Header Framework
+        </span>
+
+        <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 dark:text-white max-w-3xl leading-tight">
+            Seamless Header Experience Built for Scale
+        </h1>
+
+        <p class="mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+            Test the live feature triggers above: dark theme persistence, interactive megamenu keyboard shortcuts (<kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded text-xs">⌘K</kbd>), notifications badge counter, and responsive mobile drawers.
+        </p>
+
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+            <button onclick="document.getElementById('searchTriggerBtn').click()" class="px-6 py-3 rounded-2xl text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-lg shadow-brand-500/25 active:scale-95 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-magnifying-glass"></i> Open Search
+            </button>
+            <button onclick="document.getElementById('themeToggleBtn').click()" class="px-6 py-3 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 shadow-sm active:scale-95 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-circle-half-stroke"></i> Toggle Theme Mode
+            </button>
+        </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- 6. JAVASCRIPT CONTROLLERS -->
+    <!-- ========================================================================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. Top Announcement Bar Dismiss ---
+            const announcementBar = document.getElementById('announcementBar');
+            const dismissAnnouncementBtn = document.getElementById('dismissAnnouncementBtn');
+
+            dismissAnnouncementBtn?.addEventListener('click', () => {
+                announcementBar.classList.add('hidden');
+            });
+
+            // --- 2. Dark / Light Theme Toggle & Persistence ---
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const themeIcon = document.getElementById('themeIcon');
+
+            // Initialize saved or preferred theme
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                if (isDark) {
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+            // --- 3. Sticky Header Scroll Shadow ---
+            const mainHeader = document.getElementById('mainHeader');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    mainHeader.classList.add('shadow-md');
+                } else {
+                    mainHeader.classList.remove('shadow-md');
+                }
+            });
+
+            // --- 4. User Profile & Notifications Dropdowns ---
+            const userProfileBtn = document.getElementById('userProfileBtn');
+            const userProfileDropdown = document.getElementById('userProfileDropdown');
+            const notificationsBtn = document.getElementById('notificationsBtn');
+            const notificationsDropdown = document.getElementById('notificationsDropdown');
+            const unreadBadge = document.getElementById('unreadBadge');
+            const markReadBtn = document.getElementById('markReadBtn');
+
+            userProfileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userProfileDropdown.classList.toggle('hidden');
+                notificationsDropdown.classList.add('hidden');
+            });
+
+            notificationsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notificationsDropdown.classList.toggle('hidden');
+                userProfileDropdown.classList.add('hidden');
+            });
+
+            markReadBtn?.addEventListener('click', () => {
+                unreadBadge.classList.add('hidden');
+            });
+
+            // Close active dropdowns when clicking anywhere outside
+            document.addEventListener('click', () => {
+                userProfileDropdown.classList.add('hidden');
+                notificationsDropdown.classList.add('hidden');
+            });
+
+            // --- 5. Global Search Modal & Keyboard Shortcut (Cmd+K / Ctrl+K) ---
+            const searchModal = document.getElementById('searchModal');
+            const searchTriggerBtn = document.getElementById('searchTriggerBtn');
+            const mobileSearchTriggerBtn = document.getElementById('mobileSearchTriggerBtn');
+            const closeSearchModalBtn = document.getElementById('closeSearchModalBtn');
+            const searchModalBackdrop = document.getElementById('searchModalBackdrop');
+            const modalSearchInput = document.getElementById('modalSearchInput');
+
+            function openSearchModal() {
+                searchModal.classList.remove('hidden');
+                setTimeout(() => modalSearchInput.focus(), 50);
+            }
+
+            function closeSearchModal() {
+                searchModal.classList.add('hidden');
+            }
+
+            searchTriggerBtn?.addEventListener('click', openSearchModal);
+            mobileSearchTriggerBtn?.addEventListener('click', openSearchModal);
+            closeSearchModalBtn?.addEventListener('click', closeSearchModal);
+            searchModalBackdrop?.addEventListener('click', closeSearchModal);
+
+            // Global shortcut listener
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                    e.preventDefault();
+                    if (searchModal.classList.contains('hidden')) {
+                        openSearchModal();
+                    } else {
+                        closeSearchModal();
+                    }
+                }
+                if (e.key === 'Escape' && !searchModal.classList.contains('hidden')) {
+                    closeSearchModal();
+                }
+            });
+
+            // --- 6. Mobile Drawer & Accordion Handlers ---
+            const mobileDrawerBtn = document.getElementById('mobileDrawerBtn');
+            const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+            const mobileDrawer = document.getElementById('mobileDrawer');
+            const drawerBackdrop = document.getElementById('drawerBackdrop');
+            const mobileAccordionBtn = document.getElementById('mobileAccordionBtn');
+            const mobileAccordionContent = document.getElementById('mobileAccordionContent');
+            const accordionIcon = document.getElementById('accordionIcon');
+
+            function openMobileDrawer() {
+                drawerBackdrop.classList.remove('hidden');
+                setTimeout(() => {
+                    drawerBackdrop.classList.remove('opacity-0');
+                    mobileDrawer.classList.remove('translate-x-full');
+                }, 10);
+            }
+
+            function closeMobileDrawer() {
+                mobileDrawer.classList.add('translate-x-full');
+                drawerBackdrop.classList.add('opacity-0');
+                setTimeout(() => {
+                    drawerBackdrop.classList.add('hidden');
+                }, 300);
+            }
+
+            mobileDrawerBtn?.addEventListener('click', openMobileDrawer);
+            closeDrawerBtn?.addEventListener('click', closeMobileDrawer);
+            drawerBackdrop?.addEventListener('click', closeMobileDrawer);
+
+            mobileAccordionBtn?.addEventListener('click', () => {
+                mobileAccordionContent.classList.toggle('hidden');
+                accordionIcon.classList.toggle('rotate-180');
+            });
+        });
+    </script>
+</body>
+</html>
