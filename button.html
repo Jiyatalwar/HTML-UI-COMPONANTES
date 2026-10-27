@@ -1,1 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated Bootstrap Buttons Playground</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Google Fonts - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+  <style>
+    :root {
+      --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: #f8f9fa;
+      color: #212529;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Dark Mode Body Override */
+    body.dark-mode {
+      background-color: #0f172a;
+      color: #f8fafc;
+    }
+
+    body.dark-mode .card,
+    body.dark-mode .modal-content {
+      background-color: #1e293b;
+      border-color: #334155;
+      color: #f8fafc;
+    }
+
+    body.dark-mode .text-muted {
+      color: #94a3b8 !important;
+    }
+
+    body.dark-mode .nav-tabs .nav-link {
+      color: #94a3b8;
+    }
+
+    body.dark-mode .nav-tabs .nav-link.active {
+      background-color: #1e293b;
+      color: #38bdf8;
+      border-color: #334155 #334155 #1e293b;
+    }
+
+    body.dark-mode code, 
+    body.dark-mode pre {
+      background-color: #090d16 !important;
+      color: #e2e8f0 !important;
+    }
+
+    /* Custom Glassmorphism Header */
+    .hero-header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #d946ef 100%);
+      color: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+    }
+
+    /* Interactive Preview Playground Card */
+    .preview-card {
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.75rem;
+      border: 1px border #e2e8f0;
+      transition: all 0.25s ease;
+    }
+
+    /* Code Snippet Box Styling */
+    .code-snippet {
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.875rem;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    /* Toast Notification Custom Positioning */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1090;
+    }
+
+    /* -------------------------------------------------------------
+       ANIMATION DEFINITIONS & CUSTOM STYLES FOR BUTTON VARIATIONS
+    ------------------------------------------------------------- */
+
+    /* 1. Pulse Glow Animation */
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.6);
+      }
+      70% {
+        box-shadow: 0 0 0 14px rgba(13, 110, 253, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+      }
+    }
+
+    .btn-anim-pulse {
+      animation: pulseGlow 2s infinite;
+      transition: transform 0.2s ease;
+    }
+    .btn-anim-pulse:hover {
+      transform: scale(1.05);
+    }
+
+    /* 2. Icon Slide Reveal */
+    .btn-anim-slide {
+      position: relative;
+      overflow: hidden;
+      transition: padding-right 0.35s ease;
+    }
+    .btn-anim-slide .slide-icon {
+      position: absolute;
+      right: -25px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: all 0.35s ease;
+    }
+    .btn-anim-slide:hover {
+      padding-right: 42px !important;
+    }
+    .btn-anim-slide:hover .slide-icon {
+      right: 14px;
+      opacity: 1;
+    }
+
+    /* 3. Gradient Shift */
+    .btn-anim-gradient {
+      background-size: 200% auto !important;
+      transition: background-position 0.5s ease, transform 0.2s ease !important;
+    }
+    .btn-anim-gradient:hover {
+      background-position: right center !important;
+      transform: translateY(-2px);
+    }
+
+    /* 4. 3D Press Down Effect */
+    .btn-anim-3d {
+      transition: all 0.1s ease !important;
+      position: relative;
+      top: 0;
+    }
+    .btn-anim-3d:hover {
+      top: -2px;
+    }
+    .btn-anim-3d:active {
+      top: 3px !important;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3) !important;
+    }
+
+    /* 5. Ripple Pulse Wave */
+    .btn-anim-ripple {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-anim-ripple::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.4);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%, -50%);
+      transform-origin: 50% 50%;
+    }
+    .btn-anim-ripple:hover::after {
+      animation: rippleEffect 0.75s ease-out;
+    }
+    @keyframes rippleEffect {
+      0% {
+        width: 0px;
+        height: 0px;
+        opacity: 0.5;
+      }
+      100% {
+        width: 250px;
+        height: 250px;
+        opacity: 0;
+      }
+    }
+
+    /* 6. Border Line Grow */
+    .btn-anim-border {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      transition: color 0.4s ease, border-color 0.4s ease !important;
+    }
+    .btn-anim-border::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background: currentColor;
+      opacity: 0.15;
+      z-index: -1;
+      transition: width 0.3s ease-in-out;
+    }
+    .btn-anim-border:hover::before {
+      width: 100%;
+    }
+
+    /* Custom Color Theme Utilities for Dynamic Updates */
+    .btn-gradient-primary {
+      background-image: linear-gradient(to right, #4f46e5 0%, #3b82f6 51%, #4f46e5 100%);
+      color: white;
+      border: none;
+    }
+    .btn-gradient-success {
+      background-image: linear-gradient(to right, #10b981 0%, #059669 51%, #10b981 100%);
+      color: white;
+      border: none;
+    }
+    .btn-gradient-danger {
+      background-image: linear-gradient(to right, #ef4444 0%, #dc2626 51%, #ef4444 100%);
+      color: white;
+      border: none;
+    }
+    .btn-gradient-dark {
+      background-image: linear-gradient(to right, #334155 0%, #0f172a 51%, #334155 100%);
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container">
+    <div id="copyToast" class="toast align-items-center text-bg-success border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-check-circle-fill me-2"></i> Code snippet copied to clipboard!
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-4">
+    <!-- Navbar / Header -->
+    <header class="hero-header p-4 p-md-5 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div>
+        <h1 class="fw-bold mb-1"><i class="bi bi-cursor-fill me-2"></i>Animated Bootstrap Buttons</h1>
+        <p class="mb-0 text-white-50">Interactive showcase, customization playground, and copy-paste code snippets.</p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-light text-dark fw-semibold btn-sm shadow-sm" id="darkToggleBtn">
+          <i class="bi bi-moon-stars-fill me-1"></i> Dark Mode
+        </button>
+      </div>
+    </header>
+
+    <!-- Global Playground Controls Bar -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-bold fs-7 mb-1"><i class="bi bi-palette me-1"></i> Global Theme Color</label>
+            <select class="form-select" id="globalThemeSelect">
+              <option value="primary" selected>Primary (Blue)</option>
+              <option value="success">Success (Green)</option>
+              <option value="danger">Danger (Red)</option>
+              <option value="dark">Dark (Slate)</option>
+              <option value="gradient">Gradient Special</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-bold fs-7 mb-1"><i class="bi bi-arrows-angle-expand me-1"></i> Button Sizing</label>
+            <select class="form-select" id="globalSizeSelect">
+              <option value="btn-sm">Small (.btn-sm)</option>
+              <option value="" selected>Normal (Standard)</option>
+              <option value="btn-lg">Large (.btn-lg)</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-bold fs-7 mb-1"><i class="bi bi-type me-1"></i> Dynamic Label Text</label>
+            <input type="text" class="form-control" id="globalTextInput" value="Click Me Now">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Showcase Grid -->
+    <div class="row g-4" id="buttonsGrid">
+      <!-- Cards rendered via JavaScript for full dynamic behavior -->
+    </div>
+
+    <!-- Code Snippet Modal -->
+    <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="codeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="codeModalLabel"><i class="bi bi-code-slash me-2"></i>Button Code Snippets</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-content p-3">
+            <ul class="nav nav-tabs mb-3" id="codeTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="inline-tab" data-bs-toggle="tab" data-bs-target="#inline-code" type="button" role="tab">Inline Style JS Version</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="css-tab" data-bs-toggle="tab" data-bs-target="#css-code" type="button" role="tab">CSS Class + HTML Version</button>
+              </li>
+            </ul>
+            <div class="tab-content" id="codeTabsContent">
+              <!-- Inline Code Tab -->
+              <div class="tab-pane fade show active" id="inline-code" role="tabpanel">
+                <p class="small text-muted mb-2">Self-contained version using Bootstrap classes with inline HTML attributes and hover events:</p>
+                <pre class="code-snippet mb-3"><code id="inlineSnippetText"></code></pre>
+                <button class="btn btn-primary btn-sm" onclick="copySnippet('inlineSnippetText')">
+                  <i class="bi bi-clipboard me-1"></i> Copy Inline Code
+                </button>
+              </div>
+              <!-- CSS Code Tab -->
+              <div class="tab-pane fade" id="css-code" role="tabpanel">
+                <p class="small text-muted mb-2">Clean version using external CSS block and reusable standard class names:</p>
+                <pre class="code-snippet mb-3"><code id="cssSnippetText"></code></pre>
+                <button class="btn btn-primary btn-sm" onclick="copySnippet('cssSnippetText')">
+                  <i class="bi bi-clipboard me-1"></i> Copy CSS + HTML Code
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 text-center text-muted border-top">
+      <p class="mb-0 small">&copy; 2026 Interactive Animated Bootstrap Buttons Showcase. Fully open-source and customizable.</p>
+    </footer>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // -------------------------------------------------------------
+    // SHOWCASE DATA CONFIGURATION
+    // -------------------------------------------------------------
+    const animations = [
+      {
+        id: 'pulse',
+        name: 'Pulse Glow Pulse',
+        desc: 'Continuous soft glowing pulse animation for drawing high attention.',
+        class: 'btn-anim-pulse',
+        icon: 'bi-bell-fill',
+        inlineHover: "this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 15px rgba(13,110,253,0.5)';",
+        inlineOut: "this.style.transform='scale(1)'; this.style.boxShadow='none';",
+        extraCss: `@keyframes pulseGlow {\n  0% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.6); }\n  70% { box-shadow: 0 0 0 14px rgba(13, 110, 253, 0); }\n  100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }\n}\n.btn-anim-pulse {\n  animation: pulseGlow 2s infinite;\n}`
+      },
+      {
+        id: 'slide',
+        name: 'Icon Slide Reveal',
+        desc: 'Button smooth-expands padding to reveal an arrow icon on hover.',
+        class: 'btn-anim-slide',
+        icon: 'bi-arrow-right',
+        inlineHover: "this.style.paddingRight='42px'; const icon=this.querySelector('.slide-icon'); if(icon){icon.style.right='14px'; icon.style.opacity='1';}",
+        inlineOut: "this.style.paddingRight='16px'; const icon=this.querySelector('.slide-icon'); if(icon){icon.style.right='-25px'; icon.style.opacity='0';}",
+        extraCss: `.btn-anim-slide {\n  position: relative;\n  overflow: hidden;\n  transition: padding-right 0.35s ease;\n}\n.btn-anim-slide .slide-icon {\n  position: absolute;\n  right: -25px;\n  top: 50%;\n  transform: translateY(-50%);\n  opacity: 0;\n  transition: all 0.35s ease;\n}\n.btn-anim-slide:hover {\n  padding-right: 42px;\n}\n.btn-anim-slide:hover .slide-icon {\n  right: 14px;\n  opacity: 1;\n}`
+      },
+      {
+        id: 'gradient',
+        name: 'Gradient Flow Shift',
+        desc: 'Smooth color gradient shift background translation on hover.',
+        class: 'btn-anim-gradient',
+        icon: 'bi-magic',
+        inlineHover: "this.style.backgroundPosition='right center'; this.style.transform='translateY(-2px)';",
+        inlineOut: "this.style.backgroundPosition='left center'; this.style.transform='translateY(0)';",
+        extraCss: `.btn-anim-gradient {\n  background-size: 200% auto;\n  transition: background-position 0.5s ease, transform 0.2s ease;\n}\n.btn-anim-gradient:hover {\n  background-position: right center;\n  transform: translateY(-2px);\n}`
+      },
+      {
+        id: '3d',
+        name: '3D Press Down Effect',
+        desc: 'Tactile press interaction feeling with elevated shadow depth.',
+        class: 'btn-anim-3d',
+        icon: 'bi-hand-index-thumb-fill',
+        inlineHover: "this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';",
+        inlineOut: "this.style.transform='translateY(0)'; this.style.boxShadow='none';",
+        extraCss: `.btn-anim-3d {\n  transition: all 0.1s ease;\n}\n.btn-anim-3d:hover {\n  transform: translateY(-2px);\n}\n.btn-anim-3d:active {\n  transform: translateY(2px);\n}`
+      },
+      {
+        id: 'ripple',
+        name: 'Ripple Pulse Wave',
+        desc: 'Expanding radial wave overlay triggering seamlessly upon hover.',
+        class: 'btn-anim-ripple',
+        icon: 'bi-water',
+        inlineHover: "",
+        inlineOut: "",
+        extraCss: `.btn-anim-ripple {\n  position: relative;\n  overflow: hidden;\n}\n.btn-anim-ripple::after {\n  content: "";\n  position: absolute;\n  top: 50%; left: 50%;\n  width: 0; height: 0;\n  background: rgba(255, 255, 255, 0.4);\n  opacity: 0;\n  border-radius: 100%;\n  transform: translate(-50%, -50%);\n}\n.btn-anim-ripple:hover::after {\n  animation: rippleEffect 0.75s ease-out;\n}`
+      },
+      {
+        id: 'border',
+        name: 'Border Fill Grow',
+        desc: 'Outline button with background fill growing sideways on hover.',
+        class: 'btn-anim-border',
+        icon: 'bi-bounding-box',
+        inlineHover: "this.style.letterSpacing='1px';",
+        inlineOut: "this.style.letterSpacing='normal';",
+        extraCss: `.btn-anim-border {\n  position: relative;\n  z-index: 1;\n  overflow: hidden;\n  transition: all 0.3s ease;\n}\n.btn-anim-border::before {\n  content: '';\n  position: absolute;\n  top: 0; left: 0;\n  width: 0%; height: 100%;\n  background: currentColor;\n  opacity: 0.15;\n  z-index: -1;\n  transition: width 0.3s ease-in-out;\n}\n.btn-anim-border:hover::before {\n  width: 100%;\n}`
+      }
+    ];
+
+    // State Variables
+    let currentTheme = 'primary';
+    let currentSize = '';
+    let currentText = 'Click Me Now';
+
+    // DOM Elements
+    const gridEl = document.getElementById('buttonsGrid');
+    const themeSelect = document.getElementById('globalThemeSelect');
+    const sizeSelect = document.getElementById('globalSizeSelect');
+    const textInput = document.getElementById('globalTextInput');
+    const darkToggleBtn = document.getElementById('darkToggleBtn');
+
+    // -------------------------------------------------------------
+    // RENDER SHOWCASE CARDS
+    // -------------------------------------------------------------
+    function renderCards() {
+      gridEl.innerHTML = '';
+
+      animations.forEach((anim) => {
+        const cardCol = document.createElement('div');
+        cardCol.className = 'col-12 col-md-6 col-lg-4';
+
+        // Base class helper depending on theme selection
+        let btnClasses = `btn ${anim.class} ${currentSize}`;
+        if (anim.id === 'border') {
+          btnClasses += ` btn-outline-${currentTheme === 'gradient' ? 'primary' : currentTheme}`;
+        } else if (currentTheme === 'gradient') {
+          btnClasses += ` btn-gradient-primary`;
+        } else {
+          btnClasses += ` btn-${currentTheme}`;
+        }
+
+        cardCol.innerHTML = `
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body d-flex flex-column justify-content-between p-4">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="fw-bold mb-0">${anim.name}</h5>
+                  <span class="badge bg-secondary-subtle text-secondary rounded-pill small">CSS + Inline</span>
+                </div>
+                <p class="text-muted small mb-4">${anim.desc}</p>
+              </div>
+
+              <!-- Live Interactive Playground Box -->
+              <div class="preview-card bg-light-subtle mb-4 p-3 border rounded text-center">
+                <button 
+                  id="preview-btn-${anim.id}" 
+                  class="${btnClasses}"
+                  style="transition: all 0.3s ease;"
+                  onclick="triggerClickFeedback(this)"
+                  onmouseover="${anim.inlineHover}"
+                  onmouseout="${anim.inlineOut}">
+                  <i class="bi ${anim.icon} me-1"></i>
+                  <span>${currentText}</span>
+                  ${anim.id === 'slide' ? '<i class="bi bi-arrow-right slide-icon"></i>' : ''}
+                </button>
+                <div class="click-feedback text-success small mt-2 opacity-0 transition-all">
+                  <i class="bi bi-check-lg"></i> Click event triggered!
+                </div>
+              </div>
+
+              <!-- Card Action Footer -->
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm w-100" onclick="openCodeModal('${anim.id}')">
+                  <i class="bi bi-code-slash me-1"></i> Get Code
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        gridEl.appendChild(cardCol);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // INTERACTIVE FEEDBACK & EVENTS
+    // -------------------------------------------------------------
+    function triggerClickFeedback(btnElement) {
+      const parent = btnElement.closest('.preview-card');
+      const feedback = parent.querySelector('.click-feedback');
+      if (feedback) {
+        feedback.classList.remove('opacity-0');
+        setTimeout(() => {
+          feedback.classList.add('opacity-0');
+        }, 1200);
+      }
+    }
+
+    // Dynamic Snippet Generation for Code Modal
+    function openCodeModal(animId) {
+      const anim = animations.find(a => a.id === animId);
+      if (!anim) return;
+
+      let themeClass = currentTheme === 'gradient' ? 'btn-gradient-primary' : `btn-${currentTheme}`;
+      if (animId === 'border') {
+        themeClass = `btn-outline-${currentTheme === 'gradient' ? 'primary' : currentTheme}`;
+      }
+
+      // 1. Inline HTML Snippet
+      const inlineCode = `<a href="#" \n  class="btn ${themeClass} ${currentSize} position-relative overflow-hidden"\n  style="transition: all 0.3s ease;"\n  onmouseover="${anim.inlineHover}"\n  onmouseout="${anim.inlineOut}">\n  <i class="bi ${anim.icon} me-1"></i>\n  <span>${currentText}</span>\n  ${animId === 'slide' ? '<i class="bi bi-arrow-right slide-icon" style="position:absolute; right:-25px; top:50%; transform:translateY(-50%); opacity:0; transition:all 0.3s ease;"></i>' : ''}\n</a>`;
+
+      // 2. CSS + Clean HTML Snippet
+      const cssCode = `<!-- Custom CSS -->\n<style>\n${anim.extraCss}\n</style>\n\n<!-- HTML Button -->\n<button class="btn ${themeClass} ${anim.class} ${currentSize}">\n  <i class="bi ${anim.icon} me-1"></i>\n  <span>${currentText}</span>\n  ${animId === 'slide' ? '<i class="bi bi-arrow-right slide-icon"></i>' : ''}\n</button>`;
+
+      document.getElementById('inlineSnippetText').textContent = inlineCode;
+      document.getElementById('cssSnippetText').textContent = cssCode;
+
+      const modal = new bootstrap.Modal(document.getElementById('codeModal'));
+      modal.show();
+    }
+
+    // Copy to Clipboard Utility
+    function copySnippet(elementId) {
+      const codeText = document.getElementById(elementId).textContent;
+      
+      // Fallback/Standard Clipboard Copy Execution
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(codeText);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = codeText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+
+      // Trigger Toast
+      const toastEl = document.getElementById('copyToast');
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+
+    // -------------------------------------------------------------
+    // EVENT LISTENERS FOR CONTROLS
+    // -------------------------------------------------------------
+    themeSelect.addEventListener('change', (e) => {
+      currentTheme = e.target.value;
+      renderCards();
+    });
+
+    sizeSelect.addEventListener('change', (e) => {
+      currentSize = e.target.value;
+      renderCards();
+    });
+
+    textInput.addEventListener('input', (e) => {
+      currentText = e.target.value || 'Click Me';
+      renderCards();
+    });
+
+    // Dark Mode Toggle Logic
+    darkToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      darkToggleBtn.innerHTML = isDark 
+        ? '<i class="bi bi-sun-fill me-1"></i> Light Mode' 
+        : '<i class="bi bi-moon-stars-fill me-1"></i> Dark Mode';
+    });
+
+    // Initial Startup Render
+    window.onload = function() {
+      renderCards();
+    };
+  </script>
+</body>
+</html>
