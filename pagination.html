@@ -1,1 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Animated Pagination Showcase</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --card-bg: rgba(18, 24, 38, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-indigo: #6366f1;
+            --accent-violet: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glow-indigo: rgba(99, 102, 241, 0.4);
+            --glow-cyan: rgba(6, 182, 212, 0.4);
+        }
 
+        [data-theme="light"] {
+            --bg-dark: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --glow-indigo: rgba(99, 102, 241, 0.25);
+            --glow-cyan: rgba(6, 182, 212, 0.25);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Glow Mesh */
+        .ambient-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .mesh-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            animation: floatBlob 18s infinite alternate ease-in-out;
+        }
+
+        .mesh-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--accent-indigo);
+            top: -100px;
+            left: -100px;
+        }
+
+        .mesh-2 {
+            width: 450px;
+            height: 450px;
+            background: var(--accent-violet);
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .mesh-3 {
+            width: 350px;
+            height: 350px;
+            background: var(--accent-cyan);
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -9s;
+            opacity: 0.2;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(60px, 40px) scale(1.1); }
+            100% { transform: translate(-40px, 80px) scale(0.95); }
+        }
+
+        /* Header Glassmorphism */
+        .glass-header {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        [data-theme="light"] .glass-header {
+            background: rgba(255, 255, 255, 0.75);
+        }
+
+        .showcase-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .showcase-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.15);
+        }
+
+        /* ==========================================
+           1. FLOATING PILLS ANIMATED PAGINATION
+        ========================================== */
+        .pagination-pill-container {
+            display: inline-flex;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.35rem;
+            border-radius: 50px;
+            border: 1px solid var(--card-border);
+            position: relative;
+        }
+
+        [data-theme="light"] .pagination-pill-container {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .pagination-pill {
+            margin: 0;
+            border: none;
+            gap: 0.25rem;
+        }
+
+        .pagination-pill .page-item .page-link {
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 50px;
+            font-weight: 600;
+            padding: 0.6rem 1.1rem;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .pagination-pill .page-item .page-link:hover {
+            color: var(--text-main);
+            transform: translateY(-2px);
+        }
+
+        .pagination-pill .page-item.active .page-link {
+            color: #ffffff !important;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+            box-shadow: 0 6px 20px var(--glow-indigo);
+            transform: scale(1.05);
+        }
+
+        .pagination-pill .page-item.disabled .page-link {
+            color: rgba(148, 163, 184, 0.4);
+        }
+
+        /* ==========================================
+           2. GLASS & NEUMORPHIC GLOW PAGINATION
+        ========================================== */
+        .pagination-glass .page-item {
+            margin: 0 0.25rem;
+        }
+
+        .pagination-glass .page-link {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            border-radius: 0.75rem;
+            padding: 0.65rem 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .pagination-glass .page-link:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px var(--glow-cyan);
+            transform: translateY(-3px) scale(1.03);
+        }
+
+        .pagination-glass .page-item.active .page-link {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 20px var(--glow-cyan), inset 0 0 10px rgba(6, 182, 212, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* ==========================================
+           3. RIPPLE & EXPANDABLE COUNTER PAGINATION
+        ========================================== */
+        .pagination-ripple .page-link {
+            position: relative;
+            overflow: hidden;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+
+        .pagination-ripple .page-link:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--accent-indigo);
+            color: var(--accent-indigo);
+        }
+
+        .pagination-ripple .page-item.active .page-link {
+            background: var(--accent-indigo);
+            color: white;
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 18px var(--glow-indigo);
+        }
+
+        /* Click Ripple Animation effect */
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Expandable Jump Tooltip */
+        .jump-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            padding: 0.25rem 0.5rem 0.25rem 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .jump-input {
+            width: 50px;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+        }
+
+        /* ==========================================
+           4. DYNAMIC CARD LIST WITH LIVE TRANSITIONS
+        ========================================== */
+        .data-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .data-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(6px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Dynamic Item Transition Animations */
+        .animated-list-item {
+            animation: slideInFade 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideInFade {
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Control Panel Buttons */
+        .btn-theme-toggle {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 50px;
+            padding: 0.4rem 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-theme-toggle:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent-indigo);
+            border-color: var(--accent-indigo);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Gradient Mesh Background -->
+    <div class="ambient-mesh">
+        <div class="mesh-blob mesh-1"></div>
+        <div class="mesh-blob mesh-2"></div>
+        <div class="mesh-blob mesh-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass-header py-3 mb-4">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary bg-gradient rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; box-shadow: 0 0 15px var(--glow-indigo);">
+                    <i class="bi bi-segmented-nav text-white fs-5"></i>
+                </div>
+                <div>
+                    <h1 class="h5 fw-bold mb-0 text-gradient">PagePulse UI</h1>
+                    <span class="text-muted small">Animated Bootstrap 5 Pagination Engine</span>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn-theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+                    <i class="bi bi-moon-stars me-1" id="themeIcon"></i> <span id="themeText" class="d-none d-sm-inline">Dark Mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container pb-5">
+
+        <!-- Controls Bar -->
+        <div class="showcase-card p-3 mb-4">
+            <div class="row g-3 align-items-center justify-content-between">
+                <div class="col-md-6 d-flex align-items-center gap-3">
+                    <span class="text-muted small fw-semibold"><i class="bi bi-sliders me-1"></i> Global Controls:</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary active" onclick="changeSize('normal', this)">Default</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="changeSize('lg', this)">Large</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="changeSize('sm', this)">Small</button>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2">
+                        <i class="bi bi-magic me-1"></i> Interactive Micro-Interactions Enabled
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- SECTION 1: Floating Pills with Sliding Glow -->
+            <div class="col-lg-6">
+                <div class="showcase-card p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h2 class="h6 fw-bold mb-0 text-uppercase tracking-wider">
+                                <i class="bi bi-capsule text-primary me-2"></i>1. Soft Floating Pills
+                            </h2>
+                            <span class="badge bg-indigo-subtle text-primary small">Smooth Elevate</span>
+                        </div>
+                        <p class="text-muted small mb-4">Gradient-filled active pill indicator with soft elevation effect and spring-like hover transforms.</p>
+                    </div>
+
+                    <div class="text-center py-3">
+                        <div class="pagination-pill-container" id="pillContainer">
+                            <ul class="pagination pagination-pill mb-0" id="pillPagination">
+                                <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                <li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Glassmorphism & Cyan Neon Glow -->
+            <div class="col-lg-6">
+                <div class="showcase-card p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h2 class="h6 fw-bold mb-0 text-uppercase tracking-wider">
+                                <i class="bi bi-bounding-box-circles text-info me-2"></i>2. Glass & Neon Glow
+                            </h2>
+                            <span class="badge bg-info-subtle text-info small">Backdrop Blur</span>
+                        </div>
+                        <p class="text-muted small mb-4">Translucent glass tiles with responsive cyan neon highlights and inner radial glow on hover.</p>
+                    </div>
+
+                    <div class="text-center py-3">
+                        <nav aria-label="Glass Pagination">
+                            <ul class="pagination pagination-glass justify-content-center mb-0" id="glassPagination">
+                                <li class="page-item"><a class="page-link" href="#"><i class="bi bi-arrow-left"></i></a></li>
+                                <li class="page-item"><a class="page-link" href="#">01</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">02</a></li>
+                                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                                <li class="page-item"><a class="page-link" href="#">04</a></li>
+                                <li class="page-item"><a class="page-link" href="#"><i class="bi bi-arrow-right"></i></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Circular Ripple & Jump-To Counter -->
+            <div class="col-12">
+                <div class="showcase-card p-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                        <h2 class="h6 fw-bold mb-0 text-uppercase tracking-wider">
+                            <i class="bi bi-app-indicator text-warning me-2"></i>3. Circular Ripple & Jump-To Counter
+                        </h2>
+                        <span class="badge bg-warning-subtle text-warning small">Interactive Click Ripple</span>
+                    </div>
+                    <p class="text-muted small mb-4">Circular page links with embedded click ripple animation and an integrated direct page entry module.</p>
+
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <!-- Ripple Pagination -->
+                        <nav aria-label="Ripple Pagination">
+                            <ul class="pagination pagination-ripple mb-0" id="ripplePagination">
+                                <li class="page-item"><a class="page-link" href="#" onclick="createRipple(event)"><i class="bi bi-chevron-left"></i></a></li>
+                                <li class="page-item active"><a class="page-link" href="#" onclick="createRipple(event)">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#" onclick="createRipple(event)">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#" onclick="createRipple(event)">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#" onclick="createRipple(event)">4</a></li>
+                                <li class="page-item"><a class="page-link" href="#" onclick="createRipple(event)">5</a></li>
+                                <li class="page-item"><a class="page-link" href="#" onclick="createRipple(event)"><i class="bi bi-chevron-right"></i></a></li>
+                            </ul>
+                        </nav>
+
+                        <!-- Jump to Page Controls -->
+                        <div class="jump-box">
+                            <span class="text-muted small font-monospace">Page:</span>
+                            <input type="number" id="jumpInput" class="jump-input" value="1" min="1" max="50">
+                            <button class="btn btn-sm btn-primary rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" onclick="handleJump()">
+                                <i class="bi bi-arrow-return-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: Live Data List with Animated Pagination -->
+            <div class="col-12">
+                <div class="showcase-card p-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom pb-3 mb-4" style="border-color: var(--card-border) !important;">
+                        <div>
+                            <h2 class="h5 fw-bold mb-1"><i class="bi bi-cpu text-success me-2"></i>4. Dynamic Animated List & Pagination</h2>
+                            <p class="text-muted small mb-0">Real-time page transitions with dynamic staggered entry animations.</p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small" id="liveCountInfo">Showing 1-4 of 16 items</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Container -->
+                    <div class="row g-3 mb-4" id="dataListContainer">
+                        <!-- Dynamically Injected via JS -->
+                    </div>
+
+                    <!-- Dynamic Live Pagination -->
+                    <div class="d-flex align-items-center justify-content-center">
+                        <nav aria-label="Dynamic Live List Pagination">
+                            <ul class="pagination pagination-pill mb-0" id="liveDynamicPagination">
+                                <!-- Dynamically Injected via JS -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Data Store for Interactive Dynamic List
+        const sampleProjects = [
+            { title: "Quantum Neural Network", cat: "AI & Machine Learning", icon: "bi-cpu", color: "#6366f1", status: "Active" },
+            { title: "CyberDeck UI Framework", cat: "Frontend Design", icon: "bi-layout-sidebar-inset", color: "#06b6d4", status: "In Progress" },
+            { title: "Helios Energy Tracker", cat: "IoT & Analytics", icon: "bi-lightning-charge", color: "#eab308", status: "Active" },
+            { title: "Aether Cloud Gateway", cat: "DevOps Architecture", icon: "bi-cloud-haze2", color: "#8b5cf6", status: "Deployed" },
+            { title: "Vortex Gaming Engine", cat: "Web3 Graphics", icon: "bi-controller", color: "#ec4899", status: "Active" },
+            { title: "BioMetric Vault Access", cat: "Cyber Security", icon: "bi-shield-lock", color: "#10b981", status: "Testing" },
+            { title: "Starlight Mesh Router", cat: "Network Hardware", icon: "bi-wifi", color: "#3b82f6", status: "Active" },
+            { title: "Pulse Health Analytics", cat: "BioTech Software", icon: "bi-activity", color: "#f43f5e", status: "In Progress" },
+            { title: "Chronos Task Manager", cat: "Productivity Tool", icon: "bi-clock-history", color: "#a855f7", status: "Deployed" },
+            { title: "Nebula File Storage", cat: "Cloud Storage", icon: "bi-hdd-network", color: "#14b8a6", status: "Active" },
+            { title: "Hyperion Finance API", cat: "FinTech Platform", icon: "bi-bank", color: "#f97316", status: "Testing" },
+            { title: "Omni Vision Detector", cat: "Computer Vision", icon: "bi-eye", color: "#6366f1", status: "Active" },
+            { title: "Titan Data Pipeline", cat: "Big Data ETL", icon: "bi-diagram-3", color: "#06b6d4", status: "Deployed" },
+            { title: "Aura Voice Assistant", cat: "NLP Voice AI", icon: "bi-mic", color: "#ec4899", status: "In Progress" },
+            { title: "Solaris Solar Controller", cat: "Green Energy", icon: "bi-sun", color: "#eab308", status: "Active" },
+            { title: "Krypton Encryption Engine", cat: "Cryptography", icon: "bi-key", color: "#10b981", status: "Deployed" }
+        ];
+
+        let liveCurrentPage = 1;
+        const liveItemsPerPage = 4;
+        const liveTotalPages = Math.ceil(sampleProjects.length / liveItemsPerPage);
+
+        // Render Dynamic Cards List with Staggered Entrance Animation
+        function renderLiveList(page) {
+            const container = document.getElementById("dataListContainer");
+            container.innerHTML = "";
+
+            const start = (page - 1) * liveItemsPerPage;
+            const end = Math.min(start + liveItemsPerPage, sampleProjects.length);
+            const items = sampleProjects.slice(start, end);
+
+            items.forEach((item, index) => {
+                const col = document.createElement("div");
+                col.className = "col-md-6 col-lg-3 animated-list-item";
+                col.style.animationDelay = `${index * 0.08}s`;
+
+                col.innerHTML = `
+                    <div class="data-card h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="rounded-3 p-2 text-white d-flex align-items-center justify-content-center" style="background: ${item.color}; width: 36px; height: 36px;">
+                                    <i class="bi ${item.icon}"></i>
+                                </div>
+                                <span class="badge bg-secondary-subtle text-secondary rounded-pill small">${item.status}</span>
+                            </div>
+                            <h3 class="h6 fw-bold text-main mb-1">${item.title}</h3>
+                            <p class="text-muted small mb-0">${item.cat}</p>
+                        </div>
+                        <div class="pt-3 mt-3 border-top border-secondary border-opacity-10 d-flex align-items-center justify-content-between">
+                            <span class="text-muted small">Ref #${start + index + 101}</span>
+                            <i class="bi bi-arrow-right text-primary"></i>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+
+            document.getElementById("liveCountInfo").textContent = `Showing ${start + 1}-${end} of ${sampleProjects.length} projects`;
+        }
+
+        // Render Dynamic Live Pagination Buttons
+        function renderLivePagination() {
+            const paginationUl = document.getElementById("liveDynamicPagination");
+            paginationUl.innerHTML = "";
+
+            // Previous
+            const prevLi = document.createElement("li");
+            prevLi.className = `page-item ${liveCurrentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>`;
+            prevLi.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (liveCurrentPage > 1) {
+                    liveCurrentPage--;
+                    updateLiveSection();
+                }
+            });
+            paginationUl.appendChild(prevLi);
+
+            // Numbers
+            for (let i = 1; i <= liveTotalPages; i++) {
+                const li = document.createElement("li");
+                li.className = `page-item ${i === liveCurrentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                li.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    liveCurrentPage = i;
+                    updateLiveSection();
+                });
+                paginationUl.appendChild(li);
+            }
+
+            // Next
+            const nextLi = document.createElement("li");
+            nextLi.className = `page-item ${liveCurrentPage === liveTotalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>`;
+            nextLi.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (liveCurrentPage < liveTotalPages) {
+                    liveCurrentPage++;
+                    updateLiveSection();
+                }
+            });
+            paginationUl.appendChild(nextLi);
+        }
+
+        function updateLiveSection() {
+            renderLiveList(liveCurrentPage);
+            renderLivePagination();
+        }
+
+        /* Interactive Click Ripple Handler */
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            const rect = button.getBoundingClientRect();
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - rect.left - radius}px`;
+            circle.style.top = `${event.clientY - rect.top - radius}px`;
+            circle.classList.add("ripple-effect");
+
+            const existingRipple = button.getElementsByClassName("ripple-effect")[0];
+            if (existingRipple) {
+                existingRipple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
+        /* Jump to page feature */
+        function handleJump() {
+            const val = parseInt(document.getElementById("jumpInput").value);
+            if (val >= 1 && val <= 5) {
+                // Update Ripple Pagination Section
+                const items = document.querySelectorAll("#ripplePagination .page-item");
+                items.forEach((item, index) => {
+                    if (index === val) {
+                        item.classList.add("active");
+                    } else if (index > 0 && index < 6) {
+                        item.classList.remove("active");
+                    }
+                });
+            }
+        }
+
+        /* Global Sizing Toggle */
+        function changeSize(size, btn) {
+            // Update button UI
+            btn.parentElement.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const paginations = [
+                document.getElementById('pillPagination'),
+                document.getElementById('glassPagination'),
+                document.getElementById('liveDynamicPagination')
+            ];
+
+            paginations.forEach(pag => {
+                if (!pag) return;
+                pag.classList.remove('pagination-lg', 'pagination-sm');
+                if (size === 'lg') pag.classList.add('pagination-lg');
+                if (size === 'sm') pag.classList.add('pagination-sm');
+            });
+        }
+
+        /* Light/Dark Theme Toggle */
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute("data-theme") !== "light";
+            const icon = document.getElementById("themeIcon");
+            const text = document.getElementById("themeText");
+
+            if (isDark) {
+                body.setAttribute("data-theme", "light");
+                icon.className = "bi bi-sun-fill me-1 text-warning";
+                text.textContent = "Light Mode";
+            } else {
+                body.removeAttribute("data-theme");
+                icon.className = "bi bi-moon-stars me-1";
+                text.textContent = "Dark Mode";
+            }
+        }
+
+        // Make Static Demo Pagination Clickable
+        function attachClickHandlers(paginationId) {
+            const ul = document.getElementById(paginationId);
+            if (!ul) return;
+            const items = ul.querySelectorAll('.page-item');
+            items.forEach((item, index) => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (item.classList.contains('disabled')) return;
+                    items.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+        }
+
+        // Initialize App
+        document.addEventListener("DOMContentLoaded", () => {
+            updateLiveSection();
+            attachClickHandlers('pillPagination');
+            attachClickHandlers('glassPagination');
+        });
+    </script>
+</body>
+</html>
