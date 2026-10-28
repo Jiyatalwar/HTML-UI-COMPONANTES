@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Light JS Animated Navbar, Full-Screen Hero & Pagination</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <style>
+    /* -------------------------------------------------------------
+       1. GLOBAL LIGHT MODE STYLES & BACKGROUND VFX
+    ------------------------------------------------------------- */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #edf2f7 50%, #e2e8f0 100%);
+      --nav-bg: rgba(255, 255, 255, 0.75);
+      --nav-bg-scrolled: rgba(255, 255, 255, 0.92);
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --card-bg: rgba(255, 255, 255, 0.85);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Soft Colorful Background Orbs */
+    .bg-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      z-index: -1;
+      opacity: 0.6;
+      animation: floatOrb 12s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    .bg-orb-1 {
+      width: 400px;
+      height: 400px;
+      background: #c7d2fe;
+      top: -100px;
+      left: -100px;
+    }
+
+    .bg-orb-2 {
+      width: 350px;
+      height: 350px;
+      background: #fbcfe8;
+      bottom: 50px;
+      right: -50px;
+      animation-delay: -6s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 50px) scale(1.1); }
+    }
+
+    /* -------------------------------------------------------------
+       2. JS ANIMATED LIGHT GLASS NAVBAR
+    ------------------------------------------------------------- */
+    .navbar-custom {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 3rem);
+      max-width: 1200px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      padding: 0.75rem 1.5rem;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05),
+                  0 4px 6px -2px rgba(0, 0, 0, 0.02);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+
+    .navbar-custom.scrolled {
+      top: 0.5rem;
+      background: var(--nav-bg-scrolled);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08),
+                  0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      padding: 0.5rem 1.5rem;
+    }
+
+    .navbar-brand {
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.5px;
+      color: var(--text-dark);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary-color), #818cf8);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .nav-links-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-cursor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: rgba(79, 70, 229, 0.08);
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .nav-item-custom {
+      position: relative;
+      z-index: 2;
+    }
+
+    .nav-link-custom {
+      display: block;
+      padding: 0.5rem 1.1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link-custom:hover,
+    .nav-link-custom.active {
+      color: var(--primary-color);
+    }
+
+    .btn-nav-cta {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 600;
+      padding: 0.55rem 1.25rem;
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-nav-cta:hover {
+      background: var(--primary-hover);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    @media (max-width: 991px) {
+      .mobile-toggle { display: block; }
+      .nav-links-wrapper {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 1rem;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transform: translateY(-10px);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+      }
+      .nav-links-wrapper.show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .nav-cursor { display: none; }
+    }
+
+    /* -------------------------------------------------------------
+       3. FULL SCREEN JS ANIMATED HERO BANNER CAROUSEL
+    ------------------------------------------------------------- */
+    .hero-banner {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 600px;
+      overflow: hidden;
+      margin-bottom: 4rem;
+      background: #000;
+    }
+
+    .hero-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out, transform 1.2s ease;
+      transform: scale(1.05);
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      padding: 0 5vw;
+    }
+
+    .hero-slide.active {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 2;
+    }
+
+    .hero-slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 60%, rgba(15, 23, 42, 0.2) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      color: white;
+      max-width: 700px;
+      margin-top: 3rem;
+      animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-controls {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 3rem;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hero-btn-control {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .hero-btn-control:hover {
+      background: white;
+      color: var(--text-dark);
+      transform: scale(1.08);
+    }
+
+    .hero-indicators {
+      position: absolute;
+      bottom: 3rem;
+      left: 3rem;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+    }
+
+    .hero-indicator-dot {
+      width: 30px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .hero-indicator-dot.active {
+      background: white;
+      width: 50px;
+    }
+
+    .scroll-down-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 1.5rem;
+      animation: bounce 2s infinite;
+      text-decoration: none;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+      40% { transform: translateY(-10px) translateX(-50%); }
+      60% { transform: translateY(-5px) translateX(-50%); }
+    }
+
+    /* -------------------------------------------------------------
+       4. CARDS & PAGINATION STYLING
+    ------------------------------------------------------------- */
+    .content-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .content-card.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.12);
+    }
+
+    .pagination-container {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .pagination-animated .page-link {
+      border: none;
+      background: white;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin: 0 4px;
+      border-radius: 12px !important;
+      padding: 0.6rem 1.1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .pagination-animated .page-link:hover {
+      color: var(--primary-color);
+      background: #f1f5f9;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.06);
+    }
+
+    .pagination-animated .page-item.active .page-link {
+      background: linear-gradient(135deg, var(--primary-color), #6366f1);
+      color: white;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+      transform: translateY(-2px) scale(1.08);
+    }
+
+    .pagination-info {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light Background VFX -->
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+
+  <!-- JS Animated Light Glass Navbar -->
+  <nav class="navbar-custom" id="mainNavbar">
+    <div class="d-flex align-items-center justify-content-between w-100">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="navbar-brand">
+        <div class="brand-icon">
+          <i class="bi bi-layers-fill"></i>
+        </div>
+        <span>nav</span>
+      </a>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <!-- Animated Nav Links -->
+      <ul class="nav-links-wrapper" id="navMenu">
+        <div class="nav-cursor" id="navCursor"></div>
+
+        <li class="nav-item-custom">
+          <a href="#home" class="nav-link-custom active" data-nav="0">Home</a>
+        </li>
+        <li class="nav-item-custom">
+          <a href="#features" class="nav-link-custom" data-nav="1">Features</a>
+        </li>
+        <li class="nav-item-custom">
+          <a href="#showcase" class="nav-link-custom" data-nav="2">Showcase</a>
+        </li>
+        <li class="nav-item-custom">
+          <a href="#pricing" class="nav-link-custom" data-nav="3">Pricing</a>
+        </li>
+      </ul>
+
+      <!-- CTA Button -->
+      <div class="d-none d-lg-block">
+        <a href="#" class="btn-nav-cta">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Full Screen Hero Banner Slider -->
+  <div class="hero-banner" id="home">
+    <div class="hero-indicators" id="heroIndicators"></div>
+    
+    <!-- Slide Container -->
+    <div id="heroSlidesContainer"></div>
+
+    <!-- Scroll Down Hint -->
+    <a href="#showcase" class="scroll-down-hint" aria-label="Scroll down">
+      <i class="bi bi-chevron-down"></i>
+    </a>
+
+    <!-- Controls -->
+    <div class="hero-controls">
+      <button class="hero-btn-control" id="prevHeroBtn" aria-label="Previous Slide"><i class="bi bi-chevron-left"></i></button>
+      <button class="hero-btn-control" id="nextHeroBtn" aria-label="Next Slide"><i class="bi bi-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <!-- Main Application Content -->
+  <div class="container pb-5" id="showcase">
+    
+    <div class="text-center mb-5">
+      <span class="badge bg-white text-primary shadow-sm rounded-pill px-3 py-2 fw-semibold mb-2">
+        ✨ Interactive Light Experience
+      </span>
+      <h1 class="fw-bold display-5">Modern Dynamic Showcase</h1>
+      <p class="text-muted">Explore interactive pages powered by smooth JS interactions.</p>
+    </div>
+
+    <!-- Dynamic Card Grid -->
+    <div class="row g-4" id="cardsGrid"></div>
+
+    <!-- Animated Bootstrap Pagination -->
+    <div class="pagination-container">
+      <nav aria-label="Animated Page Navigation">
+        <ul class="pagination pagination-animated" id="paginationList"></ul>
+      </nav>
+      <div class="pagination-info" id="paginationInfo">Showing items page 1</div>
+    </div>
+  </div>
+
+  <!-- JavaScript Interactions -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      /* -------------------------------------------------------------
+         1. NAVBAR SCROLL & MAGNETIC CURSOR
+      ------------------------------------------------------------- */
+      const navbar = document.getElementById('mainNavbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 30) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+
+      const navLinks = document.querySelectorAll('.nav-link-custom');
+      const navCursor = document.getElementById('navCursor');
+      const navMenu = document.getElementById('navMenu');
+
+      function updateCursorPosition(element) {
+        if (!element || window.innerWidth < 992) return;
+        const rect = element.getBoundingClientRect();
+        const parentRect = navMenu.getBoundingClientRect();
+        
+        navCursor.style.width = `${rect.width}px`;
+        navCursor.style.height = `${rect.height}px`;
+        navCursor.style.left = `${rect.left - parentRect.left}px`;
+        navCursor.style.top = `${rect.top - parentRect.top}px`;
+        navCursor.style.opacity = '1';
+      }
+
+      const activeLink = document.querySelector('.nav-link-custom.active');
+      if (activeLink) {
+        setTimeout(() => updateCursorPosition(activeLink), 100);
+      }
+
+      navLinks.forEach(link => {
+        link.addEventListener('mouseenter', (e) => updateCursorPosition(e.target));
+        link.addEventListener('click', (e) => {
+          navLinks.forEach(l => l.classList.remove('active'));
+          e.target.classList.add('active');
+          updateCursorPosition(e.target);
+          navMenu.classList.remove('show');
+        });
+      });
+
+      navMenu.addEventListener('mouseleave', () => {
+        const currentActive = document.querySelector('.nav-link-custom.active');
+        if (currentActive) updateCursorPosition(currentActive);
+        else navCursor.style.opacity = '0';
+      });
+
+      const mobileToggle = document.getElementById('mobileToggle');
+      mobileToggle.addEventListener('click', () => navMenu.classList.toggle('show'));
+
+      /* -------------------------------------------------------------
+         2. HERO BANNER CAROUSEL DRIVEN BY JS
+      ------------------------------------------------------------- */
+      const heroSlidesData = [
+        {
+          image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGIcV6Y2bUK9P-Zf-O_HIj089YoAuuqnxnmy2be6ZC8A&s=10',
+          badge: 'New Release',
+          title: 'Next-Gen Visual Experiences',
+          subtitle: 'Crafting fluid light UI systems with modern CSS and vanilla JavaScript micro-interactions.'
+        },
+        {
+          image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRi4u5wsKXxGG0ORI_Qy9-H-hyxXI2iIFOFZKaUmKT9LA&s=10',
+          badge: 'Design Systems',
+          title: 'Performance Meets Elegance',
+          subtitle: 'Engineered for seamless responsive layouts and robust accessibility standards.'
+        },
+        {
+          image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2v7fhzX3h5O-cfJJrh-zzfGL7n4gC7v3aCM6cQhR49hQ2VU9pNCgFnDw&s=10',
+          badge: 'Interactive UI',
+          title: 'Immersive Component Library',
+          subtitle: 'Elevating digital workspaces with dynamic state transitions and clean aesthetics.'
+        }
+      ];
+
+      let currentHeroSlide = 0;
+      const heroSlidesContainer = document.getElementById('heroSlidesContainer');
+      const heroIndicators = document.getElementById('heroIndicators');
+      const prevHeroBtn = document.getElementById('prevHeroBtn');
+      const nextHeroBtn = document.getElementById('nextHeroBtn');
+
+      function renderHeroBanner() {
+        heroSlidesContainer.innerHTML = '';
+        heroIndicators.innerHTML = '';
+
+        heroSlidesData.forEach((slide, idx) => {
+          // Slide Element
+          const slideEl = document.createElement('div');
+          slideEl.className = `hero-slide ${idx === currentHeroSlide ? 'active' : ''}`;
+          slideEl.style.backgroundImage = `url('${slide.image}')`;
+          
+          slideEl.innerHTML = `
+            <div class="hero-content">
+              <span class="badge bg-white text-dark mb-3 px-3 py-2 fw-semibold rounded-pill fs-6">${slide.badge}</span>
+              <h2 class="fw-bold display-3 mb-3">${slide.title}</h2>
+              <p class="lead text-white-50 mb-4">${slide.subtitle}</p>
+              <div class="d-flex gap-3">
+                <a href="#showcase" class="btn btn-primary btn-lg rounded-pill px-4">Explore Platform</a>
+                <a href="#" class="btn btn-outline-light btn-lg rounded-pill px-4">Learn More</a>
+              </div>
+            </div>
+          `;
+          heroSlidesContainer.appendChild(slideEl);
+
+          // Indicator Dot
+          const dot = document.createElement('div');
+          dot.className = `hero-indicator-dot ${idx === currentHeroSlide ? 'active' : ''}`;
+          dot.addEventListener('click', () => {
+            currentHeroSlide = idx;
+            renderHeroBanner();
+            resetHeroTimer();
+          });
+          heroIndicators.appendChild(dot);
+        });
+      }
+
+      function nextHeroSlideFunc() {
+        currentHeroSlide = (currentHeroSlide + 1) % heroSlidesData.length;
+        renderHeroBanner();
+      }
+
+      function prevHeroSlideFunc() {
+        currentHeroSlide = (currentHeroSlide - 1 + heroSlidesData.length) % heroSlidesData.length;
+        renderHeroBanner();
+      }
+
+      nextHeroBtn.addEventListener('click', () => {
+        nextHeroSlideFunc();
+        resetHeroTimer();
+      });
+
+      prevHeroBtn.addEventListener('click', () => {
+        prevHeroSlideFunc();
+        resetHeroTimer();
+      });
+
+      let heroInterval = setInterval(nextHeroSlideFunc, 5000);
+
+      function resetHeroTimer() {
+        clearInterval(heroInterval);
+        heroInterval = setInterval(nextHeroSlideFunc, 5000);
+      }
+
+      renderHeroBanner();
+
+      /* -------------------------------------------------------------
+         3. DYNAMIC PAGINATION & CARD DATA RENDERING
+      ------------------------------------------------------------- */
+      const totalPages = 5;
+      let currentPage = 1;
+      const cardsGrid = document.getElementById('cardsGrid');
+      const paginationList = document.getElementById('paginationList');
+      const paginationInfo = document.getElementById('paginationInfo');
+
+      const sampleItems = [
+        { title: 'Interactive Design', icon: 'bi-palette', desc: 'Crafting clean, functional light interfaces with smooth micro-interactions.' },
+        { title: 'Responsive Layouts', icon: 'bi-phone', desc: 'Fully adaptative grids built using modern Bootstrap flexbox techniques.' },
+        { title: 'Smooth Animations', icon: 'bi-magic', desc: 'Fluid transitions powered by hardware-accelerated CSS and light JS.' },
+        { title: 'Performance First', icon: 'bi-lightning-charge', desc: 'Lightweight code structure ensuring rapid render times and smooth UX.' },
+        { title: 'Modern Typography', icon: 'bi-type', desc: 'Balanced typography scales designed for readability on high-res displays.' },
+        { title: 'Component Library', icon: 'bi-box-seam', desc: 'Modular components ready to integrate seamlessly into your apps.' }
+      ];
+
+      function renderCards(page) {
+        cardsGrid.innerHTML = '';
+        
+        sampleItems.forEach((item, index) => {
+          const cardCol = document.createElement('div');
+          cardCol.className = 'col-md-6 col-lg-4';
+          
+          cardCol.innerHTML = `
+            <div class="content-card">
+              <div class="brand-icon mb-3">
+                <i class="bi ${item.icon}"></i>
+              </div>
+              <h5 class="fw-bold mb-2">${item.title} #${(page - 1) * 6 + index + 1}</h5>
+              <p class="text-muted small mb-0">${item.desc}</p>
+            </div>
+          `;
+          
+          cardsGrid.appendChild(cardCol);
+
+          setTimeout(() => {
+            cardCol.querySelector('.content-card').classList.add('fade-in');
+          }, index * 80);
+        });
+
+        paginationInfo.textContent = `Displaying page ${page} of ${totalPages} (Items ${(page - 1) * 6 + 1} - ${page * 6})`;
+      }
+
+      function renderPagination() {
+        paginationList.innerHTML = '';
+
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>`;
+        prevLi.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (currentPage > 1) {
+            currentPage--;
+            updateState();
+          }
+        });
+        paginationList.appendChild(prevLi);
+
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement('li');
+          li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+          li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+          
+          li.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentPage = i;
+            updateState();
+          });
+
+          paginationList.appendChild(li);
+        }
+
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>`;
+        nextLi.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (currentPage < totalPages) {
+            currentPage++;
+            updateState();
+          }
+        });
+        paginationList.appendChild(nextLi);
+      }
+
+      function updateState() {
+        renderCards(currentPage);
+        renderPagination();
+      }
+
+      updateState();
+    });
+  </script>
+</body>
+</html>
