@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern VFX Navbar</title>
+    <style>
+        /* 1. Global Reset & Ambient VFX Canvas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background VFX Orbs */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.45;
+            animation: pulseGlow 8s ease-in-out infinite alternate;
+        }
+
+        body::before {
+            width: 350px;
+            height: 350px;
+            background: #00d2ff;
+            top: -100px;
+            left: 10%;
+        }
+
+        body::after {
+            width: 400px;
+            height: 400px;
+            background: #9200pt;
+            background: linear-gradient(135deg, #7928ca, #ff0080);
+            top: 50px;
+            right: 5%;
+            animation-delay: -4s;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.35; }
+            100% { transform: scale(1.2) translate(30px, 20px); opacity: 0.6; }
+        }
+
+        /* 2. Glassmorphism Navbar Base Structure */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(18, 24, 38, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1rem 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 3. Holographic Gradient Shimmer Logo */
+        .nav-logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            background: linear-gradient(135deg, #ffffff 0%, #00d2ff 50%, #7928ca 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shineVFX 5s linear infinite;
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes shineVFX {
+            to { background-position: 200% center; }
+        }
+
+        /* 4. Navigation Menu & VFX Underline */
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            position: relative;
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        /* Expanding Neon Underline Glow */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, #00d2ff, #0072ff);
+            border-radius: 2px;
+            box-shadow: 0 0 10px #00d2ff, 0 0 20px #00d2ff;
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(0, 210, 255, 0.6);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        /* 5. Glowing CTA Button Visual Effect */
+        .nav-cta {
+            position: relative;
+            padding: 0.6rem 1.4rem;
+            color: #fff;
+            background: linear-gradient(135deg, #00d2ff, #0072ff);
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.8);
+        }
+
+        .nav-cta:hover::before {
+            left: 100%;
+        }
+
+        /* 6. Responsive Mobile Styling */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-menu {
+                gap: 1.2rem;
+            }
+
+            .nav-link {
+                font-size: 0.9rem;
+            }
+
+            .nav-cta {
+                padding: 0.4rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Start -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Brand / Holographic VFX Logo -->
+            <a href="#" class="nav-logo">NEXUS</a>
+
+            <!-- Navigation Links -->
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="#" class="nav-cta">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+</body>
+</html>
