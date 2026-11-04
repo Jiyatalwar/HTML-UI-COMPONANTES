@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shahi Haveli - Royal Indian Fine Dining 3D Menu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#fef9c3',
+                            300: '#e6ca65',
+                            400: '#d4af37',
+                            500: '#c5a059',
+                            600: '#aa7f2a',
+                            700: '#8c6218',
+                        },
+                        ivory: {
+                            50: '#fffdf9',
+                            100: '#faf6f0',
+                            200: '#f5efe6',
+                            300: '#eae0d0',
+                            400: '#dbccb5',
+                        },
+                        royalCrimson: '#7a1c22',
+                        royalMaroon: '#541217',
+                        deepNavy: '#111827',
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        playfair: ['Playfair Display', 'serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 3D Perspective Stage */
+        .stage {
+            perspective: 2200px;
+            perspective-origin: 50% 50%;
+        }
+
+        .book {
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* 3D Page Dynamics */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transform-origin: left center;
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1.000), z-index 0s 0.6s;
+            cursor: pointer;
+        }
+
+        .page-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+        }
+
+        .page-front {
+            z-index: 2;
+        }
+
+        .page-back {
+            transform: rotateY(180deg);
+            z-index: 1;
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* Spine Dynamic Shading & realistic depth overlay */
+        .page-front::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.03) 70%, rgba(0,0,0,0) 100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .page-back::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 30px;
+            height: 100%;
+            background: linear-gradient(to left, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.03) 70%, rgba(0,0,0,0) 100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Light Theme Shadow & Foil Styling */
+        .light-book-shadow {
+            box-shadow: 0 25px 50px -12px rgba(122, 28, 34, 0.15), 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .gold-foil-text {
+            background: linear-gradient(135deg, #aa7f2a 0%, #d4af37 40%, #8c6218 70%, #c5a059 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-border {
+            border-image: linear-gradient(to bottom right, #d4af37, #c5a059, #8c6218) 1;
+        }
+
+        /* Light Ambient Background */
+        .ambient-light-bg {
+            background: radial-gradient(circle at 50% 30%, #fefcf7 0%, #f4eae0 80%, #eae0d2 100%);
+        }
+
+        /* Custom Scrollbar for Drawer */
+        .custom-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f5efe6;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #c5a059;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-full ambient-light-bg text-stone-800 font-montserrat select-none overflow-x-hidden flex flex-col justify-between">
+
+    <!-- HEADER / NAVIGATION BAR -->
+    <header class="w-full px-6 py-4 flex justify-between items-center z-50 border-b border-amber-900/10 bg-white/70 backdrop-blur-md shadow-sm">
+        <div class="flex items-center space-x-3">
+            <span class="text-3xl text-royalCrimson font-cinzel font-extrabold tracking-wider flex items-center">
+                <i class="fa-solid fa-crown text-gold-500 mr-2 text-2xl"></i>SHAHI HAVELI
+            </span>
+            <span class="hidden md:inline-block text-xs uppercase tracking-widest text-amber-900/60 border-l border-amber-900/20 pl-3 font-cinzel">
+                Royal Indian Fine Dining
+            </span>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <button onclick="resetBookView()" class="px-4 py-2 text-xs font-cinzel tracking-wider uppercase bg-ivory-200 hover:bg-ivory-300 text-royalCrimson rounded-full border border-gold-500/30 transition shadow-sm font-semibold">
+                <i class="fa-solid fa-book-open mr-1.5"></i> Front Cover
+            </button>
+            
+            <!-- Order Cart Drawer Trigger -->
+            <button onclick="toggleCartModal()" class="relative px-5 py-2 bg-gradient-to-r from-royalCrimson to-royalMaroon hover:from-royalMaroon hover:to-stone-900 text-ivory-50 font-semibold rounded-full shadow-md transition duration-200 flex items-center space-x-2">
+                <i class="fa-solid fa-utensils text-sm text-gold-300"></i>
+                <span class="text-xs uppercase tracking-wider font-cinzel">Your Order</span>
+                <span id="cart-count-badge" class="ml-1 bg-gold-400 text-royalMaroon text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN 3D MENU DISPLAY AREA -->
+    <main class="flex-1 flex flex-col justify-center items-center relative py-6 px-2">
+        
+        <!-- 3D STAGE -->
+        <div class="stage w-full max-w-5xl h-[610px] flex justify-center items-center relative">
+            
+            <!-- THE 3D BOOK -->
+            <div id="book" class="book w-[880px] h-[580px] relative light-book-shadow rounded-r-lg transition-transform duration-700">
+                
+                <!-- HARD COVER BACKING EMBOSS -->
+                <div class="absolute inset-0 bg-ivory-300 rounded-lg border-2 border-gold-500/40"></div>
+
+                <!-- ================= PAGE 0: COVER PAGE ================= -->
+                <div id="page-0" class="page z-50" onclick="turnPage(0)">
+                    <!-- Front Cover (Light Ivory & Gold Luxury) -->
+                    <div class="page-face page-front bg-gradient-to-br from-ivory-50 via-ivory-100 to-ivory-200 border-r-2 border-gold-500/50 rounded-r-md p-8 flex flex-col justify-between text-center relative overflow-hidden">
+                        
+                        <!-- Light Gold Ornamental Pattern Background -->
+                        <div class="absolute inset-0 opacity-[0.06] flex items-center justify-center pointer-events-none">
+                            <i class="fa-solid fa-bahai text-[400px] text-amber-900"></i>
+                        </div>
+
+                        <!-- Ornate Double Gold Framing -->
+                        <div class="absolute inset-4 border-2 border-gold-500/40 rounded-md pointer-events-none flex flex-col justify-between p-2">
+                            <div class="border border-gold-500/20 h-full w-full rounded flex flex-col justify-between p-3">
+                                <div class="flex justify-between text-gold-600 text-xs"><span>◈</span><span>◈</span></div>
+                                <div class="flex justify-between text-gold-600 text-xs"><span>◈</span><span>◈</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Header -->
+                        <div class="mt-6 z-10">
+                            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-ivory-50 border-2 border-gold-500/60 flex items-center justify-center shadow-md">
+                                <i class="fa-solid fa-crown text-2xl text-gold-600"></i>
+                            </div>
+                            <p class="text-xs tracking-[0.35em] uppercase text-amber-900/70 font-cinzel font-semibold">ESTABLISHED 1924</p>
+                            <h1 class="text-4xl font-black font-cinzel mt-2 gold-foil-text tracking-wide">SHAHI HAVELI</h1>
+                            <div class="w-28 h-0.5 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto my-3"></div>
+                            <p class="text-xs font-playfair italic text-royalCrimson">Authentic Royal Indian Cuisine</p>
+                        </div>
+
+                        <!-- Cover Hero Image inside Arch Frame -->
+                        <div class="my-auto z-10 flex justify-center">
+                            <div class="w-48 h-48 rounded-t-full rounded-b-lg border-4 border-gold-400/60 p-1 bg-white shadow-xl overflow-hidden relative group">
+                                <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80" alt="Royal Dining Feast" class="w-full h-full object-cover rounded-t-full rounded-b-md group-hover:scale-105 transition duration-700" onerror="this.src='https://placehold.co/400x400/faf6f0/7a1c22?text=Shahi+Feast'">
+                            </div>
+                        </div>
+
+                        <!-- Interactive Tap Prompt -->
+                        <div class="mb-3 z-20">
+                            <span class="inline-flex items-center px-5 py-2 rounded-full bg-royalCrimson/10 border border-royalCrimson/30 text-royalCrimson text-xs font-cinzel font-bold tracking-widest uppercase animate-pulse shadow-sm">
+                                Open Menu Book <i class="fa-solid fa-book-open ml-2 text-xs text-gold-600"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Inside Left Page 1 (Welcome & Philosophy) -->
+                    <div class="page-face page-back bg-ivory-50 text-stone-900 p-8 flex flex-col justify-between border-l border-gold-500/20">
+                        <div class="border-b border-gold-500/30 pb-4 text-center">
+                            <span class="text-[10px] font-cinzel uppercase tracking-widest text-gold-700">Culinary Heritage</span>
+                            <h2 class="text-2xl font-cinzel font-bold text-royalCrimson mt-0.5">Welcome to Shahi Haveli</h2>
+                            <p class="text-xs font-playfair italic text-stone-600">Where timeless recipes meet royal hospitality</p>
+                        </div>
+
+                        <div class="my-auto text-center px-4 space-y-4">
+                            <div class="w-12 h-12 mx-auto rounded-full bg-ivory-200 border border-gold-400/50 flex items-center justify-center">
+                                <i class="fa-solid fa-mortar-pestle text-xl text-royalCrimson"></i>
+                            </div>
+                            <p class="text-xs font-montserrat leading-relaxed text-stone-700 italic">
+                                "Our dishes pay homage to the royal kitchens of India's historic dynasties. From hand-ground aromatic spices to slow charcoal-fired tandoors, every dish is crafted with reverence for tradition, passion, and elegance."
+                            </p>
+                            <div class="pt-2 border-t border-gold-500/20 w-36 mx-auto">
+                                <span class="font-cinzel font-bold text-xs text-royalCrimson block">Maharaj Ranveer Singh</span>
+                                <span class="text-[9px] font-cinzel uppercase text-gold-700 tracking-wider">Executive Head Chef</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between text-[10px] text-stone-400 uppercase tracking-widest font-cinzel border-t border-stone-200 pt-2">
+                            <span>Shahi Haveli Menu</span>
+                            <span>Page 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= PAGE 1: STARTERS & CHAAT (PAGES 2 & 3) ================= -->
+                <div id="page-1" class="page z-40" onclick="turnPage(1)">
+                    <!-- Front Side (Starters - Left) -->
+                    <div class="page-face page-front bg-ivory-50 text-stone-900 p-6 flex flex-col justify-between border-r border-gold-500/20">
+                        <div>
+                            <div class="flex justify-between items-baseline border-b border-gold-500/30 pb-2 mb-3">
+                                <h3 class="text-lg font-cinzel font-bold text-royalCrimson tracking-wide">I. Shahi Shuruwaat</h3>
+                                <span class="text-[10px] font-cinzel italic text-gold-700 font-semibold">Starters & Chaat</span>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- Item 1: Samosa Chaat -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6vyYSnCHxyeEFOvtbhET5R9QMaxIc_mGIFBQNrBHymA&s=10" alt="Samosa Chaat" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Samosa+Chaat'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-green-700 flex items-center justify-center p-0.5 bg-white" title="Vegetarian"><span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Dilli Samosa Chaat</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 280</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Crispy potato samosa with ragda chickpeas, sweet curd & mint-tamarind chutney.</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Dilli Samosa Chaat', 280)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Item 2: Tandoori Malai Paneer -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUhz1BdGjyYcJRNpMMTijgy6oBc1ho7_GGZr8u7OqjXQ&s=10" alt="Tandoori Paneer Tikka" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Malai+Paneer'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-green-700 flex items-center justify-center p-0.5 bg-white" title="Vegetarian"><span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Tandoori Malai Paneer</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 420</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Cottage cheese marinated in cashew cream, green cardamom & tandoor charred. 🌶️</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Tandoori Malai Paneer', 420)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right text-[10px] text-stone-400 uppercase tracking-widest font-cinzel border-t border-stone-200 pt-2">
+                            Page 2
+                        </div>
+                    </div>
+
+                    <!-- Back Side (Tandoori Kebabs - Right) -->
+                    <div class="page-face page-back bg-ivory-50 text-stone-900 p-6 flex flex-col justify-between border-l border-gold-500/20">
+                        <div>
+                            <div class="flex justify-between items-baseline border-b border-gold-500/30 pb-2 mb-3">
+                                <h3 class="text-lg font-cinzel font-bold text-royalCrimson tracking-wide">II. Clay Tandoor</h3>
+                                <span class="text-[10px] font-cinzel italic text-gold-700 font-semibold">Non-Veg Appetizers</span>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- Item 3: Amritsari Fish Tikka -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_eBg9p0lkaKwu-e_Q1Kaph75JPoMCL4RIdEorAfKq0w&s=10" alt="Amritsari Fish Tikka" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Fish+Tikka'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-red-700 flex items-center justify-center p-0.5 bg-white" title="Non-Vegetarian"><span class="w-0 h-0 border-l-[3.5px] border-l-transparent border-r-[3.5px] border-r-transparent border-b-[7px] border-b-red-700"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Amritsari Fish Tikka</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 540</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Fresh sole fillet steeped in carom seeds, yellow chilli powder & mustard oil deep-fried. 🌶️</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Amritsari Fish Tikka', 540)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Item 4: Galouti Kebab -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSm8NewuBW7cTUlytJm1FVKQJ5FsB-DE3miMhH6psLiBg&s=10" alt="Lucknowi Galouti Kebab" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Galouti+Kebab'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-red-700 flex items-center justify-center p-0.5 bg-white" title="Non-Vegetarian"><span class="w-0 h-0 border-l-[3.5px] border-l-transparent border-r-[3.5px] border-r-transparent border-b-[7px] border-b-red-700"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Lucknowi Galouti Kebab</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 580</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Melt-in-mouth minced lamb kebabs infused with 160 secret spices served over Ulta Tawa Paratha.</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Lucknowi Galouti Kebab', 580)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-left text-[10px] text-stone-400 uppercase tracking-widest font-cinzel border-t border-stone-200 pt-2">
+                            Page 3
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= PAGE 2: ROYAL MAINS (PAGES 4 & 5) ================= -->
+                <div id="page-2" class="page z-30" onclick="turnPage(2)">
+                    <!-- Front Side (Non-Veg Curries - Left) -->
+                    <div class="page-face page-front bg-ivory-50 text-stone-900 p-6 flex flex-col justify-between border-r border-gold-500/20">
+                        <div>
+                            <div class="flex justify-between items-baseline border-b border-gold-500/30 pb-2 mb-3">
+                                <h3 class="text-lg font-cinzel font-bold text-royalCrimson tracking-wide">III. Royal Curries</h3>
+                                <span class="text-[10px] font-cinzel italic text-gold-700 font-semibold">Signature Non-Veg</span>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- Item 5: Butter Chicken -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9OcAC8vGfDJmECrJ85-P3C-z4thCfEKSqkzCWFWbwDA&s=10" alt="Butter Chicken" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Murgh+Makhani'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-red-700 flex items-center justify-center p-0.5 bg-white"><span class="w-0 h-0 border-l-[3.5px] border-l-transparent border-r-[3.5px] border-r-transparent border-b-[7px] border-b-red-700"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Old Delhi Murgh Makhani</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 620</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Charcoal smoked tandoori chicken simmered in rich creamy tomato silk gravy with fenugreek. 🌶️</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Old Delhi Murgh Makhani', 620)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Item 6: Hyderabadi Dum Biryani -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwm3npG7uYK6Zgn35BqhgmqluZPCmbIFttPdxlBwX5sA&s=10" alt="Hyderabadi Dum Biryani" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Dum+Biryani'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-red-700 flex items-center justify-center p-0.5 bg-white"><span class="w-0 h-0 border-l-[3.5px] border-l-transparent border-r-[3.5px] border-r-transparent border-b-[7px] border-b-red-700"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Hyderabadi Dum Biryani</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 650</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Fragrant basmati rice layered with spiced chicken, fried onions & saffron cooked sealed in dough clay handi. 🌶️🌶️</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Hyderabadi Dum Biryani', 650)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right text-[10px] text-stone-400 uppercase tracking-widest font-cinzel border-t border-stone-200 pt-2">
+                            Page 4
+                        </div>
+                    </div>
+
+                    <!-- Back Side (Vegetarian Mains - Right) -->
+                    <div class="page-face page-back bg-ivory-50 text-stone-900 p-6 flex flex-col justify-between border-l border-gold-500/20">
+                        <div>
+                            <div class="flex justify-between items-baseline border-b border-gold-500/30 pb-2 mb-3">
+                                <h3 class="text-lg font-cinzel font-bold text-royalCrimson tracking-wide">IV. Shakhari Rasoi</h3>
+                                <span class="text-[10px] font-cinzel italic text-gold-700 font-semibold">Vegetarian Specialties</span>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- Item 7: Dal Makhani -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_zrQGWfPUsKivtSVyXdNtxs-QQq2AzGIQXLP7zIubZA&s=10" alt="Dal Makhani" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Dal+Makhani'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-green-700 flex items-center justify-center p-0.5 bg-white"><span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Slow-Cooked Dal Makhani</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 440</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Black lentils slow simmered over coal flames for 24 hours with butter and cream.</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Slow-Cooked Dal Makhani', 440)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Item 8: Paneer Pasanda -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIrx2lneViaQX_m8I4dwv6jICD_I5c-wMD92dJ18IgCw&s=10" alt="Paneer Pasanda" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Paneer+Pasanda'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-green-700 flex items-center justify-center p-0.5 bg-white"><span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Shahi Paneer Pasanda</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 490</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Stuffed paneer triangles with raisins and nuts in a velvety cashew brown onion gravy.</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Shahi Paneer Pasanda', 490)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-left text-[10px] text-stone-400 uppercase tracking-widest font-cinzel border-t border-stone-200 pt-2">
+                            Page 5
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= PAGE 3: BREADS & DESSERTS (PAGES 6 & 7) ================= -->
+                <div id="page-3" class="page z-20" onclick="turnPage(3)">
+                    <!-- Front Side (Breads & Rice - Left) -->
+                    <div class="page-face page-front bg-ivory-50 text-stone-900 p-6 flex flex-col justify-between border-r border-gold-500/20">
+                        <div>
+                            <div class="flex justify-between items-baseline border-b border-gold-500/30 pb-2 mb-3">
+                                <h3 class="text-lg font-cinzel font-bold text-royalCrimson tracking-wide">V. Breads & Basmati</h3>
+                                <span class="text-[10px] font-cinzel italic text-gold-700 font-semibold">Tandoor Breads</span>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- Item 9: Garlic Butter Naan -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxdON-4mu75Z38oEY8veEwwk9EZSjcRBbSkCnjHykaKw&s=10" alt="Garlic Naan" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Garlic+Naan'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-green-700 flex items-center justify-center p-0.5 bg-white"><span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Garlic Butter Naan</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 140</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Soft leavened flatbread topped with minced garlic, fresh coriander & creamery butter.</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Garlic Butter Naan', 140)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Item 10: Zafrani Pulao -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF1vn57GOJV66mLrUszFfmeSxDYmIeY9bl7yYRsmHWpw&s" alt="Zafrani Pulao" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Zafrani+Pulao'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-green-700 flex items-center justify-center p-0.5 bg-white"><span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Zafrani Saffron Pulao</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 320</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Aged basmati rice cooked with whole spices, Kashmiri saffron strands & toasted nuts.</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Zafrani Saffron Pulao', 320)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right text-[10px] text-stone-400 uppercase tracking-widest font-cinzel border-t border-stone-200 pt-2">
+                            Page 6
+                        </div>
+                    </div>
+
+                    <!-- Back Side (Desserts & Drinks - Right) -->
+                    <div class="page-face page-back bg-ivory-50 text-stone-900 p-6 flex flex-col justify-between border-l border-gold-500/20">
+                        <div>
+                            <div class="flex justify-between items-baseline border-b border-gold-500/30 pb-2 mb-3">
+                                <h3 class="text-lg font-cinzel font-bold text-royalCrimson tracking-wide">VI. Meetha & Drinks</h3>
+                                <span class="text-[10px] font-cinzel italic text-gold-700 font-semibold">Desserts & Refreshments</span>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- Item 11: Gulab Jamun with Rabri -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuh8bsEgM3WVl7K-MCnvcF50LRo9ENiC2xyyjF9n2OJg&s=10" alt="Gulab Jamun with Rabri" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Gulab+Jamun'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-green-700 flex items-center justify-center p-0.5 bg-white"><span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Gulab Jamun with Rabri</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 260</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Warm khoya dumplings soaked in cardamomed syrup topped with thick pistachio rabri.</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Gulab Jamun with Rabri', 260)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Item 12: Royal Masala Lassi -->
+                                <div class="flex gap-3 items-center p-2 rounded-lg bg-ivory-100/70 hover:bg-ivory-200/80 border border-gold-500/20 transition">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtiQzr7z-UrvpttnhtbXrjSu5zw65VVOrqCb7ivYqsVA&s=10" alt="Mango Lassi" class="w-16 h-16 object-cover rounded-md border border-gold-500/30 shadow-sm" onerror="this.src='https://placehold.co/200x200/faf6f0/7a1c22?text=Mango+Lassi'">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-baseline">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="w-3.5 h-3.5 border border-green-700 flex items-center justify-center p-0.5 bg-white"><span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span></span>
+                                                <h4 class="font-bold text-xs text-stone-900 font-cinzel">Kesari Mango Lassi</h4>
+                                            </div>
+                                            <span class="font-bold text-royalCrimson text-xs font-cinzel">₹ 190</span>
+                                        </div>
+                                        <p class="text-[10px] text-stone-600 mt-0.5">Thick churned yogurt blended with Alphonso mango pulp, saffron & silver leaf garnish.</p>
+                                        <button onclick="event.stopPropagation(); addToOrder('Kesari Mango Lassi', 190)" class="mt-1.5 text-[10px] bg-royalCrimson text-ivory-50 hover:bg-royalMaroon px-2.5 py-0.5 rounded font-cinzel font-semibold transition shadow-sm">
+                                            + Add to Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-left text-[10px] text-stone-400 uppercase tracking-widest font-cinzel border-t border-stone-200 pt-2">
+                            Page 7
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= PAGE 4: BACK COVER (PAGE 8) ================= -->
+                <div id="page-4" class="page z-10" onclick="turnPage(4)">
+                    <!-- Inside Back Cover -->
+                    <div class="page-face page-front bg-ivory-50 text-stone-900 p-6 flex flex-col justify-between border-r border-gold-500/20">
+                        <div class="text-center mt-2">
+                            <span class="text-[10px] font-cinzel uppercase tracking-widest text-gold-700">Chef's Selection</span>
+                            <h3 class="text-xl font-cinzel font-bold text-royalCrimson">Royal Haveli Thali</h3>
+                            <p class="text-xs font-playfair italic text-stone-600 mt-0.5">The Complete Emperor's Feast</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-ivory-100 to-ivory-200 p-4 rounded-xl border border-gold-400/40 text-center space-y-2 my-auto shadow-sm">
+                            <i class="fa-solid fa-crown text-2xl text-gold-600"></i>
+                            <h4 class="font-cinzel font-bold text-sm text-stone-900">Maharaja Dining Experience</h4>
+                            <p class="text-[10px] text-stone-600 leading-relaxed">
+                                A curated spread including 2 Kebabs, Murgh Makhani, Dal Makhani, Paneer Pasanda, Garlic Naan basket, Saffron Pulao & Gulab Jamun.
+                            </p>
+                            <span class="text-2xl font-black font-cinzel text-royalCrimson block">₹ 1,350 <span class="text-xs font-normal text-stone-500">/ person</span></span>
+                            <button onclick="event.stopPropagation(); addToOrder('Maharaja Dining Experience Thali', 1350)" class="mt-2 px-5 py-2 bg-royalCrimson text-ivory-50 text-xs font-cinzel rounded-full hover:bg-royalMaroon transition shadow-md font-semibold">
+                                Add Thali To Order
+                            </button>
+                        </div>
+
+                        <div class="text-right text-[10px] text-stone-400 uppercase tracking-widest font-cinzel border-t border-stone-200 pt-2">
+                            Page 8
+                        </div>
+                    </div>
+
+                    <!-- Outside Back Cover (Light Elegance) -->
+                    <div class="page-face page-back bg-gradient-to-bl from-ivory-100 via-ivory-200 to-ivory-300 border-l-2 border-gold-500/50 rounded-l-md p-8 flex flex-col justify-between text-center relative">
+                        <div class="mt-8">
+                            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-ivory-50 border border-gold-500/40 flex items-center justify-center">
+                                <i class="fa-solid fa-om text-xl text-royalCrimson"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold font-cinzel text-royalCrimson">SHAHI HAVELI</h2>
+                            <p class="text-[10px] font-cinzel text-gold-700 tracking-widest mt-1">NEW DELHI • MUMBAI • JAIPUR</p>
+                        </div>
+
+                        <div class="space-y-3 text-xs text-stone-700 font-montserrat my-auto bg-ivory-50/80 p-4 rounded-xl border border-gold-500/20 shadow-sm">
+                            <p class="flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-location-dot text-royalCrimson"></i>
+                                <span>12 Rajpath Heritage Boulevard, New Delhi</span>
+                            </p>
+                            <p class="flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-phone text-royalCrimson"></i>
+                                <span>+91 (011) 2345-6789 / 90</span>
+                            </p>
+                            <p class="flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-envelope text-royalCrimson"></i>
+                                <span>reservations@shahihaveli.in</span>
+                            </p>
+                        </div>
+
+                        <div class="text-[10px] text-stone-400 font-cinzel border-t border-gold-500/20 pt-3">
+                            © 2026 Shahi Haveli Hospitality Ltd. All Rights Reserved.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CONTROLS & TAB INDEX INDICATORS -->
+        <div class="mt-5 flex flex-col items-center space-y-3">
+            
+            <div class="flex items-center space-x-5">
+                <button id="prev-btn" onclick="prevPage()" class="px-5 py-2 bg-white hover:bg-ivory-200 text-royalCrimson font-cinzel text-xs font-bold tracking-wider uppercase rounded-full border border-gold-500/40 shadow-md transition flex items-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <span>Prev Page</span>
+                </button>
+
+                <!-- Page Index Tabs -->
+                <div class="flex items-center space-x-2 bg-white/80 px-4 py-2 rounded-full border border-gold-500/30 shadow-sm backdrop-blur-sm">
+                    <button onclick="goToPage(0)" id="tab-0" class="w-3 h-3 rounded-full bg-royalCrimson transition-all" title="Cover"></button>
+                    <button onclick="goToPage(1)" id="tab-1" class="w-3 h-3 rounded-full bg-stone-300 hover:bg-royalCrimson transition-all" title="Starters"></button>
+                    <button onclick="goToPage(2)" id="tab-2" class="w-3 h-3 rounded-full bg-stone-300 hover:bg-royalCrimson transition-all" title="Mains"></button>
+                    <button onclick="goToPage(3)" id="tab-3" class="w-3 h-3 rounded-full bg-stone-300 hover:bg-royalCrimson transition-all" title="Breads & Sweets"></button>
+                    <button onclick="goToPage(4)" id="tab-4" class="w-3 h-3 rounded-full bg-stone-300 hover:bg-royalCrimson transition-all" title="Back Cover"></button>
+                </div>
+
+                <button id="next-btn" onclick="nextPage()" class="px-5 py-2 bg-white hover:bg-ivory-200 text-royalCrimson font-cinzel text-xs font-bold tracking-wider uppercase rounded-full border border-gold-500/40 shadow-md transition flex items-center space-x-2">
+                    <span>Next Page</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+
+            <p class="text-[11px] text-stone-500 italic font-cinzel">Click pages, buttons or tabs to turn pages in 3D space</p>
+        </div>
+    </main>
+
+
+    <!-- SIDEBAR ORDER / CART DRAWER MODAL -->
+    <div id="cart-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex justify-end opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="cart-content" class="w-full max-w-md bg-ivory-50 border-l border-gold-500/30 h-full p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 shadow-2xl">
+            
+            <div>
+                <div class="flex justify-between items-center border-b border-gold-500/30 pb-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-utensils text-royalCrimson text-lg"></i>
+                        <h3 class="text-xl font-cinzel font-bold text-royalCrimson">Your Table Selection</h3>
+                    </div>
+                    <button onclick="toggleCartModal()" class="text-stone-400 hover:text-stone-700 text-xl">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div id="cart-items-list" class="mt-4 space-y-3 max-h-[58vh] overflow-y-auto custom-scroll pr-2">
+                    <p id="empty-cart-msg" class="text-xs text-stone-500 italic text-center py-10 font-cinzel">Your order drawer is empty. Click "+ Add to Order" on dishes in the menu pages.</p>
+                </div>
+            </div>
+
+            <div class="border-t border-gold-500/30 pt-4 space-y-3 bg-ivory-50">
+                <div class="space-y-1.5 text-xs">
+                    <div class="flex justify-between text-stone-600">
+                        <span>Subtotal</span>
+                        <span id="subtotal-amount" class="font-semibold">₹ 0</span>
+                    </div>
+                    <div class="flex justify-between text-stone-600">
+                        <span>GST & Service Charge (10%)</span>
+                        <span id="service-amount" class="font-semibold">₹ 0</span>
+                    </div>
+                    <div class="flex justify-between text-base font-bold font-cinzel text-royalCrimson pt-2 border-t border-stone-200">
+                        <span>Total Payable</span>
+                        <span id="total-amount">₹ 0</span>
+                    </div>
+                </div>
+
+                <button onclick="confirmOrder()" class="w-full py-3 bg-gradient-to-r from-royalCrimson to-royalMaroon hover:from-royalMaroon hover:to-stone-900 text-ivory-50 font-bold font-cinzel rounded-full shadow-lg transition tracking-wider uppercase text-xs">
+                    Confirm & Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // State Variables
+        let currentPage = 0;
+        const totalPages = 5; // 0: Cover, 1: Starters, 2: Mains, 3: Breads & Desserts, 4: Back Cover
+        let cart = [];
+
+        // DOM Elements
+        const book = document.getElementById('book');
+        const pages = [
+            document.getElementById('page-0'),
+            document.getElementById('page-1'),
+            document.getElementById('page-2'),
+            document.getElementById('page-3'),
+            document.getElementById('page-4')
+        ];
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        // Update 3D Book State & Camera Shifts
+        function updateBookState() {
+            if (currentPage === 0) {
+                book.style.transform = 'translateX(-25%)';
+            } else if (currentPage === totalPages - 1) {
+                book.style.transform = 'translateX(25%)';
+            } else {
+                book.style.transform = 'translateX(0%)';
+            }
+
+            // Stack 3D Pages dynamically
+            pages.forEach((page, idx) => {
+                if (idx < currentPage) {
+                    page.classList.add('flipped');
+                    page.style.zIndex = idx;
+                } else {
+                    page.classList.remove('flipped');
+                    page.style.zIndex = totalPages - idx;
+                }
+            });
+
+            // Update Control Buttons
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage === totalPages - 1;
+
+            // Update Navigation Tab Dots
+            for (let i = 0; i < totalPages; i++) {
+                const tab = document.getElementById(`tab-${i}`);
+                if (i === currentPage) {
+                    tab.className = 'w-6 h-3 rounded-full bg-royalCrimson transition-all shadow-sm';
+                } else {
+                    tab.className = 'w-3 h-3 rounded-full bg-stone-300 hover:bg-royalCrimson transition-all';
+                }
+            }
+        }
+
+        // Navigation Actions
+        function nextPage() {
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                updateBookState();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                updateBookState();
+            }
+        }
+
+        function goToPage(pageNum) {
+            currentPage = pageNum;
+            updateBookState();
+        }
+
+        function turnPage(pageIdx) {
+            if (pageIdx === currentPage) {
+                nextPage();
+            } else if (pageIdx === currentPage - 1) {
+                prevPage();
+            }
+        }
+
+        function resetBookView() {
+            currentPage = 0;
+            updateBookState();
+        }
+
+        // Live Order Drawer & Cart System
+        function addToOrder(name, price) {
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCartUI();
+
+            // Cart Badge Bounce Animation
+            const badge = document.getElementById('cart-count-badge');
+            badge.classList.add('scale-125', 'bg-gold-300', 'text-royalCrimson');
+            setTimeout(() => {
+                badge.classList.remove('scale-125', 'bg-gold-300', 'text-royalCrimson');
+            }, 250);
+        }
+
+        function updateCartQuantity(name, change) {
+            const item = cart.find(i => i.name === name);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.name !== name);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const listContainer = document.getElementById('cart-items-list');
+            const totalBadge = document.getElementById('cart-count-badge');
+            const subtotalEl = document.getElementById('subtotal-amount');
+            const serviceEl = document.getElementById('service-amount');
+            const totalEl = document.getElementById('total-amount');
+
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            totalBadge.textContent = totalCount;
+
+            if (cart.length === 0) {
+                listContainer.innerHTML = `<p id="empty-cart-msg" class="text-xs text-stone-500 italic text-center py-10 font-cinzel">Your order drawer is empty. Click "+ Add to Order" on dishes in the menu pages.</p>`;
+                subtotalEl.textContent = '₹ 0';
+                serviceEl.textContent = '₹ 0';
+                totalEl.textContent = '₹ 0';
+                return;
+            }
+
+            let subtotal = 0;
+            listContainer.innerHTML = '';
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between bg-white p-3 rounded-lg border border-gold-500/20 shadow-sm';
+                row.innerHTML = `
+                    <div class="flex-1 pr-2">
+                        <h5 class="text-xs font-bold text-stone-900 font-cinzel">${item.name}</h5>
+                        <span class="text-[11px] text-stone-500">₹ ${item.price} each</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="updateCartQuantity('${item.name}', -1)" class="w-5 h-5 bg-ivory-200 hover:bg-gold-400 text-royalCrimson rounded flex items-center justify-center text-xs font-bold shadow-sm">-</button>
+                        <span class="text-xs font-bold text-royalCrimson px-1">${item.quantity}</span>
+                        <button onclick="updateCartQuantity('${item.name}', 1)" class="w-5 h-5 bg-ivory-200 hover:bg-gold-400 text-royalCrimson rounded flex items-center justify-center text-xs font-bold shadow-sm">+</button>
+                        <span class="text-xs font-bold text-stone-900 w-14 text-right">₹ ${itemTotal}</span>
+                    </div>
+                `;
+                listContainer.appendChild(row);
+            });
+
+            const serviceCharge = Math.round(subtotal * 0.10);
+            const grandTotal = subtotal + serviceCharge;
+
+            subtotalEl.textContent = `₹ ${subtotal}`;
+            serviceEl.textContent = `₹ ${serviceCharge}`;
+            totalEl.textContent = `₹ ${grandTotal}`;
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cart-modal');
+            const content = document.getElementById('cart-content');
+
+            if (modal.classList.contains('pointer-events-none')) {
+                modal.classList.remove('pointer-events-none', 'opacity-0');
+                content.classList.remove('translate-x-full');
+            } else {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                content.classList.add('translate-x-full');
+            }
+        }
+
+        function confirmOrder() {
+            if (cart.length === 0) return;
+            alert("🙏 Namaste! Your royal dining selection has been transmitted to our kitchen. We look forward to serving you!");
+            cart = [];
+            updateCartUI();
+            toggleCartModal();
+        }
+
+        // Initialize state on window load
+        window.onload = function() {
+            updateBookState();
+        };
+    </script>
+</body>
+</html>
