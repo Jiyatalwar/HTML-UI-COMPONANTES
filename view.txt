@@ -1,0 +1,92 @@
+This project is a marketing/content website for Binary Global, built as a Next.js app. Its goal is to present the company’s services, solutions, industries, customer stories, blog/news content, and contact/enquiry flows.
+
+At a high level:
+
+Frontend framework: Next.js + React
+Styling: Tailwind CSS + custom CSS in styles/
+Data source: remote API at https://api.binaryglobal.com/api
+Build style: mostly static pages with getStaticProps, plus some dynamic detail pages using getServerSideProps
+Main purpose: corporate website / lead generation site
+Project structure
+
+pages/index.js
+
+This is the homepage.
+It fetches home content from process.env.apiUrl + /home/pageDetail.
+It renders the main hero slider, service blocks, customer stories, and video/technology section.
+It uses static generation with revalidation.
+components/Homepage/MainSlider.js
+
+This is the homepage banner carousel.
+It uses Swiper for autoplay + pagination.
+Each slide pulls title, description, image, and mobile image from bannerList.
+It is one of the key visual components of the landing page.
+components/Common/PageLayout.js
+
+Common layout used across pages.
+Adds SEO meta tags, analytics scripts, header, footer, cookie consent, and toast notification container.
+This is where global page metadata and tracking are centralized.
+pages/_app.js
+
+Global app wrapper.
+Loads site settings via Settings() from the API and stores them in React context.
+components/Helper/Ajax.js
+
+Shared fetch helper used across the frontend.
+Handles API calls and JSON responses consistently.
+pages/api/
+
+These are Next API routes acting as lightweight proxies to the backend API.
+Examples:
+pages/api/setting.js
+pages/api/menu.js
+pages/api/contact-us.js
+This keeps client-side code cleaner and hides backend endpoints.
+pages/about-us.js, pages/services.js, pages/solutions.js
+
+These are content-heavy pages for the company’s business story and offerings.
+They are populated from CMS/API responses rather than hardcoded content.
+public/
+
+Static assets such as images, SVGs, and branding files.
+How the app works
+
+The site is content-driven.
+Most pages fetch structured data from the remote Binary Global API, then render components based on the response.
+Example:
+homepage → home/pageDetail
+menu/footer/site settings → /setting and /solution/menuList etc.
+service pages → CMS data for service offerings, case studies, and blog posts
+This means the project is not a traditional CRUD app; it’s more like a CMS-backed corporate website.
+
+Main technologies used
+
+Next.js 13 for routing and page rendering
+React 18 for UI
+Tailwind CSS for styling
+Swiper for carousels
+Formik + Yup for forms/validation
+Axios + fetch wrappers for API interaction
+react-google-recaptcha, react-toastify, react-cookie-consent
+Important design pattern
+
+Reusable sections/components:
+components/Homepage/
+components/UI/
+components/Common/
+This keeps page files smaller and content structured.
+The homepage itself is very typical for a corporate website:
+
+hero banner
+core solutions/services
+why choose us
+customer stories
+technology/video block
+lead/contact CTA sections
+The MainSlider component is a good example of the project’s pattern: it receives data as props, maps over banner items, and renders them with Swiper. It is a presentation layer powered by a CMS response, not a local static file.
+
+If you want, I can also give you:
+
+a page-by-page walkthrough of the site,
+a component map of the homepage,
+or a “how data flows from API to screen” explanation using the homepage as the example.
